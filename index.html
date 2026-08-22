@@ -1,3 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vistoria de Veículos</title>
+
+    <style>
+        :root {
+            --azul: #011E38;
+            --bege: #F5F1EB;
+            --branco: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--branco);
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--azul);
+        }
+
+        /* =========================
+           TELA DE CARREGAMENTO
+           ========================= */
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: var(--branco);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            z-index: 9999;
+
+            transition:
+                opacity 0.7s ease,
+                visibility 0.7s ease;
+        }
+
+        #loading img {
+            width: min(75vw, 320px);
+            height: auto;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* =========================
+           CONTEÚDO PRINCIPAL
+           ========================= */
+
+        #app {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px 20px;
+
+            opacity: 0;
+            transform: translateY(15px);
+
+            transition:
+                opacity 0.8s ease,
+                transform 0.8s ease;
+        }
+
+        #app.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* =========================
+           LOGO / TÍTULO
+           ========================= */
+
+        .titulo {
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitulo {
+            font-size: 14px;
+            text-align: center;
+
+            opacity: 0.7;
+
+            margin-bottom: 35px;
+        }
+
+        /* =========================
+           LOGIN
+           ========================= */
+
+        .login-box {
+            width: 100%;
+
+            background: var(--bege);
+
+            border-radius: 18px;
+
+            padding: 28px 22px;
+
+            box-shadow:
+                0 8px 25px rgba(1, 30, 56, 0.08);
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 700;
+
+            margin-bottom: 22px;
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            margin-bottom: 7px;
+        }
+
+        .campo input {
+            width: 100%;
+
+            height: 48px;
+
+            border: 1.5px solid rgba(1, 30, 56, 0.25);
+            border-radius: 10px;
+
+            padding: 0 14px;
+
+            font-size: 16px;
+            color: var(--azul);
+
+            background: var(--branco);
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .campo input:focus {
+            border-color: var(--azul);
+
+            box-shadow:
+                0 0 0 3px rgba(1, 30, 56, 0.08);
+        }
+
+        .botao-login {
+            width: 100%;
+            height: 50px;
+
+            margin-top: 8px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: var(--azul);
+            color: var(--branco);
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .botao-login:active {
+            transform: scale(0.98);
+        }
+
+        .botao-login:hover {
+            opacity: 0.92;
+        }
+
+        .esqueci {
+            display: block;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: var(--azul);
+
+            font-size: 13px;
+            text-decoration: none;
+
+            opacity: 0.75;
+        }
+
+        /* =========================
+           DESENVOLVEDOR
+           ========================= */
+
+        .desenvolvedor {
+            margin-top: 45px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .desenvolvedor span {
+            font-size: 11px;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            opacity: 0.55;
+
+            margin-bottom: 10px;
+        }
+
+        .desenvolvedor img {
+            width: 145px;
+            height: auto;
+        }
+
+        /* =========================
+           RESPONSIVIDADE
+           ========================= */
+
+        @media (max-height: 700px) {
+
+            #app {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            .subtitulo {
+                margin-bottom: 22px;
+            }
+
+            .desenvolvedor {
+                margin-top: 25px;
+            }
+        }
+
+        @media (min-width: 600px) {
+
+            #app {
+                padding: 40px;
+            }
+
+            .container {
+                max-width: 390px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         TELA DE CARREGAMENTO
+         ========================= -->
+
+    <div id="loading">
+
+                <img
+            src="Imagens_Logos/Logo_animada2.gif"
+            alt="Carregando"
+            draggable="false"
+        >
+
+    </div>
+
+
+    <!-- =========================
+         APLICAÇÃO
+         ========================= -->
+
+    <main id="app">
+
+        <div class="container">
+
+            <h1 class="titulo">
+                Vistoria de Veículos
+            </h1>
+
+            <p class="subtitulo">
+                Sistema de controle e inspeção
+            </p>
+
+
+            <!-- LOGIN -->
+
+            <section class="login-box">
+
+                <h2 class="login-title">
+                    Acessar sistema
+                </h2>
+
+                <form id="loginForm">
+
+                    <div class="campo">
+
+                        <label for="usuario">
+                            Usuário
+                        </label>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Digite seu usuário"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="senha">
+                            Senha
+                        </label>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="botao-login"
+                    >
+                        Entrar
+                    </button>
+
+                </form>
+
+
+                <a
+                    href="#"
+                    class="esqueci"
+                    onclick="alert('Entre em contato com o administrador do sistema.'); return false;"
+                >
+                    Esqueci minha senha
+                </a>
+
+            </section>
+
+
+            <!-- DESENVOLVEDOR -->
+
+            <div class="desenvolvedor">
+
+                <span>
+                    Desenvolvido por
+                </span>
+
+                <img
+                    src="Imagens_Logos/logo_MATRIOSKA.png"
+                    alt="MATRIOSKA Desenvolvimento e Soluções em Planejamento"
+                >
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /*
+         * Tempo da tela inicial.
+         * Altere aqui se quiser que o GIF permaneça
+         * mais ou menos tempo antes do login aparecer.
+         */
+
+        const TEMPO_SPLASH = 2500;
+
+
+        window.addEventListener("load", function () {
+
+            setTimeout(function () {
+
+                const loading = document.getElementById("loading");
+                const app = document.getElementById("app");
+
+                loading.classList.add("hidden");
+
+                setTimeout(function () {
+                    app.classList.add("visible");
+                }, 250);
+
+            }, TEMPO_SPLASH);
+
+        });
+
+
+        /*
+         * LOGIN
+         *
+         * Neste momento apenas impede o envio do formulário.
+         * Aqui posteriormente podemos colocar a autenticação
+         * real do sistema.
+         */
+
 <script>
 
     const GIF_PATH = "Imagens_Logos/Logo_animada2.gif";
@@ -163,3 +609,8 @@
         });
 
 </script>
+
+    </script>
+
+</body>
+</html>
