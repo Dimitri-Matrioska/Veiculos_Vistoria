@@ -294,10 +294,9 @@
 
     <div id="loading">
 
-                <img
+        <img
             src="Imagens_Logos/Logo_animada2.gif"
             alt="Carregando"
-            draggable="false"
         >
 
     </div>
@@ -415,7 +414,7 @@
          * mais ou menos tempo antes do login aparecer.
          */
 
-        const TEMPO_SPLASH = 2500;
+        const TEMPO_SPLASH = 1500;
 
 
         window.addEventListener("load", function () {
@@ -444,171 +443,24 @@
          * real do sistema.
          */
 
-<script>
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", function (event) {
 
-    const GIF_PATH = "Imagens_Logos/Logo_animada2.gif";
+                event.preventDefault();
 
-    const loading = document.getElementById("loading");
-    const app = document.getElementById("app");
-    const gif = document.querySelector("#loading img");
+                const usuario =
+                    document.getElementById("usuario").value;
 
+                const senha =
+                    document.getElementById("senha").value;
 
-    /*
-     * Descobre automaticamente a duração do GIF
-     * somando o tempo de cada frame.
-     */
-    async function obterDuracaoGif(url) {
+                console.log("Usuário:", usuario);
+                console.log("Senha:", senha);
 
-        try {
+                alert("Login ainda não configurado.");
 
-            const resposta = await fetch(url, {
-                cache: "no-store"
             });
-
-            const buffer = await resposta.arrayBuffer();
-            const bytes = new Uint8Array(buffer);
-
-            let duracao = 0;
-
-            /*
-             * No formato GIF, o tempo de cada frame
-             * fica armazenado no Graphic Control Extension.
-             *
-             * Estrutura:
-             *
-             * 21 F9 04
-             * XX
-             * XX XX  ← duração em centésimos de segundo
-             */
-            for (let i = 0; i < bytes.length - 7; i++) {
-
-                if (
-                    bytes[i] === 0x21 &&
-                    bytes[i + 1] === 0xF9 &&
-                    bytes[i + 2] === 0x04
-                ) {
-
-                    const atraso =
-                        bytes[i + 4] |
-                        (bytes[i + 5] << 8);
-
-                    /*
-                     * O GIF usa centésimos de segundo.
-                     */
-                    duracao += atraso * 10;
-                }
-            }
-
-
-            /*
-             * Alguns GIFs possuem frames com atraso 0.
-             * Se não conseguimos obter uma duração válida,
-             * usamos um valor de segurança.
-             */
-            if (duracao <= 0) {
-                return 2500;
-            }
-
-            return duracao;
-
-        } catch (erro) {
-
-            console.warn(
-                "Não foi possível determinar a duração do GIF.",
-                erro
-            );
-
-            /*
-             * Fallback.
-             */
-            return 2500;
-        }
-    }
-
-
-    /*
-     * Inicia a tela de abertura.
-     */
-    async function iniciarSplash() {
-
-        const duracaoGif =
-            await obterDuracaoGif(GIF_PATH);
-
-
-        console.log(
-            "Duração detectada:",
-            duracaoGif,
-            "ms"
-        );
-
-
-        /*
-         * Aguarda o GIF terminar exatamente uma vez.
-         */
-        setTimeout(function () {
-
-            /*
-             * Primeiro desaparece o GIF.
-             */
-            loading.classList.add("hidden");
-
-
-            /*
-             * Depois mostra o sistema.
-             */
-            setTimeout(function () {
-
-                app.classList.add("visible");
-
-            }, 250);
-
-        }, duracaoGif);
-
-    }
-
-
-    /*
-     * Garante que o GIF esteja carregado
-     * antes de iniciar a contagem.
-     */
-    if (gif.complete) {
-
-        iniciarSplash();
-
-    } else {
-
-        gif.addEventListener(
-            "load",
-            iniciarSplash,
-            { once: true }
-        );
-
-    }
-
-
-    /*
-     * LOGIN
-     */
-    document
-        .getElementById("loginForm")
-        .addEventListener("submit", function (event) {
-
-            event.preventDefault();
-
-            const usuario =
-                document.getElementById("usuario").value;
-
-            const senha =
-                document.getElementById("senha").value;
-
-            console.log("Usuário:", usuario);
-            console.log("Senha:", senha);
-
-            alert("Login ainda não configurado.");
-
-        });
-
-</script>
 
     </script>
 
