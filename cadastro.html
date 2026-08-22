@@ -47,7 +47,7 @@
         /* CONTEÚDO PRINCIPAL */
         main {
             flex: 1;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             margin: 30px auto;
             padding: 0 20px;
@@ -74,17 +74,64 @@
             margin-bottom: 25px;
         }
 
+        /* INDICADOR DE PASSOS */
+        .passos-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--off-white);
+            padding-bottom: 15px;
+        }
+
+        .passo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+        }
+
+        .passo-item.ativo {
+            color: var(--azul);
+        }
+
+        .passo-numero {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--cinza-borda);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .passo-item.ativo .passo-numero {
+            background-color: var(--azul);
+        }
+
+        /* ESTRUTURA DOS PASSOS (CONTEÚDO) */
+        .passo-conteudo {
+            display: none;
+        }
+
+        .passo-conteudo.ativo {
+            display: block;
+        }
+
         .secao-titulo {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--azul);
-            border-bottom: 2px solid var(--off-white);
-            padding-bottom: 6px;
-            margin: 20px 0 15px 0;
+            color: var(--azul-escuro);
+            margin-bottom: 15px;
         }
 
+        /* FORMULÁRIO PASSO 1 */
         .grid-inputs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -121,52 +168,102 @@
             border-color: var(--azul);
         }
 
-        /* GRID DE FOTOS */
-        .grid-fotos {
+        /* LAYOUT PASSO 2 - CARRO COM FOTOS NAS LATERAIS */
+        .diagrama-carro-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto auto;
             gap: 15px;
-            margin-top: 10px;
+            align-items: center;
+            justify-items: center;
+            margin: 20px 0;
         }
 
-        .foto-box {
+        .carro-imagem-central {
+            grid-column: 2;
+            grid-row: 1 / span 2;
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .foto-slot {
+            width: 100%;
             border: 2px dashed var(--cinza-borda);
-            border-radius: 6px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 12px;
             text-align: center;
             background-color: var(--off-white);
             cursor: pointer;
-            position: relative;
+            transition: all 0.2s;
         }
 
-        .foto-box input[type="file"] {
+        .foto-slot:hover {
+            border-color: var(--azul);
+            background-color: #FFFFFF;
+        }
+
+        .foto-slot input[type="file"] {
             display: none;
         }
 
-        .foto-box label {
+        .foto-slot label {
             cursor: pointer;
             font-size: 12px;
-            font-weight: 600;
-            display: block;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* BOTÃO ENVIAR */
-        .btn-salvar {
+        .preview-img {
             width: 100%;
-            background-color: var(--azul);
-            color: #FFFFFF;
-            border: none;
-            padding: 14px;
+            max-height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            display: none;
+            margin-top: 5px;
+        }
+
+        /* BOTÕES DE NAVEGAÇÃO */
+        .botoes-passo {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn-nav {
+            padding: 12px 24px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 25px;
-            transition: background-color 0.2s;
+            border: none;
+            transition: opacity 0.2s;
         }
 
-        .btn-salvar:hover {
+        .btn-proximo {
+            background-color: var(--azul);
+            color: #FFFFFF;
+            margin-left: auto;
+        }
+
+        .btn-anterior {
+            background-color: var(--cinza-borda);
+            color: var(--azul-escuro);
+        }
+
+        .btn-salvar {
             background-color: var(--azul-escuro);
+            color: #FFFFFF;
+            margin-left: auto;
+        }
+
+        .btn-nav:hover {
+            opacity: 0.9;
         }
 
         /* RODAPÉ PADRÃO */
@@ -190,6 +287,18 @@
             height: 22px;
             object-fit: contain;
         }
+
+        @media (max-width: 650px) {
+            .diagrama-carro-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+            .carro-imagem-central {
+                grid-column: 1;
+                grid-row: auto;
+                order: -1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -206,60 +315,145 @@
     <main>
         <div class="card-form">
             <h1 class="titulo-pagina">Nova Vistoria</h1>
-            <p class="subtitulo" id="infoUsuario">Carregando usuário...</p>
+            <p class="subtitulo" id="infoUsuario">Carregando responsável...</p>
+
+            <!-- BARRA DE PASSOS -->
+            <div class="passos-container">
+                <div class="passo-item ativo" id="indicador-1">
+                    <div class="passo-numero">1</div>
+                    <span>Dados do Veículo</span>
+                </div>
+                <div class="passo-item" id="indicador-2">
+                    <div class="passo-numero">2</div>
+                    <span>Fotos dos Ângulos</span>
+                </div>
+                <div class="passo-item" id="indicador-3">
+                    <div class="passo-numero">3</div>
+                    <span>Avarias & Confirmar</span>
+                </div>
+            </div>
 
             <form id="formVistoria">
-                <div class="secao-titulo">Dados do Motorista e Veículo</div>
                 
-                <div class="grid-inputs">
-                    <div class="grupo-input">
-                        <label for="motorista">Nome do Motorista</label>
-                        <input type="text" id="motorista" required placeholder="Digite o nome completo">
+                <!-- PASSO 1: DADOS -->
+                <div class="passo-conteudo ativo" id="passo-1">
+                    <div class="secao-titulo">Informações Gerais</div>
+                    <div class="grid-inputs">
+                        <div class="grupo-input">
+                            <label for="motorista">Nome do Motorista</label>
+                            <input type="text" id="motorista" required placeholder="Digite o nome completo">
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="cpf">CPF do Motorista</label>
+                            <!-- Bloqueado para aceitar APENAS números -->
+                            <input type="text" id="cpf" maxlength="11" required placeholder="Apenas números" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="placa">Placa do Veículo</label>
+                            <input type="text" id="placa" maxlength="7" required placeholder="Ex: ABC1D23" style="text-transform: uppercase;">
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="modelo">Modelo</label>
+                            <input type="text" id="modelo" required placeholder="Ex: Gol 1.0">
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="cor">Cor</label>
+                            <input type="text" id="cor" required placeholder="Ex: Branco">
+                        </div>
                     </div>
 
-                    <div class="grupo-input">
-                        <label for="cpf">CPF do Motorista</label>
-                        <!-- Apenas aceita números via regex no oninput -->
-                        <input type="text" id="cpf" maxlength="11" required placeholder="Apenas números" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                    </div>
-
-                    <div class="grupo-input">
-                        <label for="placa">Placa do Veículo</label>
-                        <input type="text" id="placa" maxlength="7" required placeholder="Ex: ABC1D23" style="text-transform: uppercase;">
-                    </div>
-
-                    <div class="grupo-input">
-                        <label for="modelo">Modelo</label>
-                        <input type="text" id="modelo" required placeholder="Ex: Gol 1.0">
-                    </div>
-
-                    <div class="grupo-input">
-                        <label for="cor">Cor</label>
-                        <input type="text" id="cor" required placeholder="Ex: Branco">
+                    <div class="botoes-passo">
+                        <button type="button" class="btn-nav btn-proximo" onclick="avancarPasso(2)">Avançar para Fotos ➔</button>
                     </div>
                 </div>
 
-                <div class="secao-titulo">Fotos da Vistoria</div>
-                <div class="grid-fotos">
-                    <div class="foto-box">
-                        <label for="fotoDianteira">📷 Foto Dianteira</label>
-                        <input type="file" id="fotoDianteira" accept="image/*" required>
+                <!-- PASSO 2: FOTOS AO REDOR DO CARRO -->
+                <div class="passo-conteudo" id="passo-2">
+                    <div class="secao-titulo">Fotografe os 4 Ângulos do Veículo</div>
+                    
+                    <div class="diagrama-carro-container">
+                        <!-- Esquerda Superior: Dianteira -->
+                        <div class="foto-slot" style="grid-column: 1; grid-row: 1;">
+                            <label for="fotoDianteira">
+                                <span>📷 Dianteira</span>
+                                <img id="prev-dianteira" class="preview-img" alt="Preview">
+                            </label>
+                            <input type="file" id="fotoDianteira" accept="image/*" onchange="previewImagem(this, 'prev-dianteira')">
+                        </div>
+
+                        <!-- Esquerda Inferior: Lat. Esquerda -->
+                        <div class="foto-slot" style="grid-column: 1; grid-row: 2;">
+                            <label for="fotoLatEsq">
+                                <span>📷 Lat. Esquerda</span>
+                                <img id="prev-latesq" class="preview-img" alt="Preview">
+                            </label>
+                            <input type="file" id="fotoLatEsq" accept="image/*" onchange="previewImagem(this, 'prev-latesq')">
+                        </div>
+
+                        <!-- IMAGEM CENTRAL DO CARRO -->
+                        <img src="Imagens_Logos/silhueta_carro.png" alt="Desenho do Veículo" class="carro-imagem-central" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3202/3202003.png'">
+
+                        <!-- Direita Superior: Traseira -->
+                        <div class="foto-slot" style="grid-column: 3; grid-row: 1;">
+                            <label for="fotoTraseira">
+                                <span>📷 Traseira</span>
+                                <img id="prev-traseira" class="preview-img" alt="Preview">
+                            </label>
+                            <input type="file" id="fotoTraseira" accept="image/*" onchange="previewImagem(this, 'prev-traseira')">
+                        </div>
+
+                        <!-- Direita Inferior: Lat. Direita -->
+                        <div class="foto-slot" style="grid-column: 3; grid-row: 2;">
+                            <label for="fotoLatDir">
+                                <span>📷 Lat. Direita</span>
+                                <img id="prev-latdir" class="preview-img" alt="Preview">
+                            </label>
+                            <input type="file" id="fotoLatDir" accept="image/*" onchange="previewImagem(this, 'prev-latdir')">
+                        </div>
                     </div>
-                    <div class="foto-box">
-                        <label for="fotoTraseira">📷 Foto Traseira</label>
-                        <input type="file" id="fotoTraseira" accept="image/*" required>
-                    </div>
-                    <div class="foto-box">
-                        <label for="fotoLatEsq">📷 Lat. Esquerda</label>
-                        <input type="file" id="fotoLatEsq" accept="image/*" required>
-                    </div>
-                    <div class="foto-box">
-                        <label for="fotoLatDir">📷 Lat. Direita</label>
-                        <input type="file" id="fotoLatDir" accept="image/*" required>
+
+                    <div class="botoes-passo">
+                        <button type="button" class="btn-nav btn-anterior" onclick="avancarPasso(1)">⬅ Voltar</button>
+                        <button type="button" class="btn-nav btn-proximo" onclick="avancarPasso(3)">Avançar para Avarias ➔</button>
                     </div>
                 </div>
 
-                <button type="submit" id="btnSalvar" class="btn-salvar">Finalizar e Salvar Vistoria</button>
+                <!-- PASSO 3: AVARIAS E CONCLUSÃO -->
+                <div class="passo-conteudo" id="passo-3">
+                    <div class="secao-titulo">Registro de Avarias</div>
+
+                    <div class="grupo-input" style="margin-bottom: 20px;">
+                        <label for="possuiAvarias">O veículo possui avarias?</label>
+                        <select id="possuiAvarias" onchange="toggleSecaoAvarias(this.value)">
+                            <option value="Não">Não, veículo sem avarias</option>
+                            <option value="Sim">Sim, possui avarias</option>
+                        </select>
+                    </div>
+
+                    <div id="secao-detalhes-avarias" style="display: none;">
+                        <div class="grupo-input" style="margin-bottom: 20px;">
+                            <label for="descricaoAvarias">Descrição das Avarias</label>
+                            <textarea id="descricaoAvarias" rows="3" placeholder="Descreva os danos encontrados..."></textarea>
+                        </div>
+
+                        <div class="secao-titulo" style="font-size: 13px;">Fotos das Avarias (Opcional)</div>
+                        <div class="grid-inputs" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+                            <div class="foto-slot"><label for="fotoAvaria1">📷 Avaria 1</label><input type="file" id="fotoAvaria1" accept="image/*"></div>
+                            <div class="foto-slot"><label for="fotoAvaria2">📷 Avaria 2</label><input type="file" id="fotoAvaria2" accept="image/*"></div>
+                            <div class="foto-slot"><label for="fotoAvaria3">📷 Avaria 3</label><input type="file" id="fotoAvaria3" accept="image/*"></div>
+                        </div>
+                    </div>
+
+                    <div class="botoes-passo">
+                        <button type="button" class="btn-nav btn-anterior" onclick="avancarPasso(2)">⬅ Voltar</button>
+                        <button type="submit" id="btnSalvar" class="btn-nav btn-salvar">Finalizar Vistoria</button>
+                    </div>
+                </div>
+
             </form>
         </div>
     </main>
@@ -279,14 +473,42 @@
         (function validarAcesso() {
             usuarioSessao = JSON.parse(sessionStorage.getItem("usuarioLogado"));
             if (!usuarioSessao) {
-                alert("Sessão expirada ou não encontrada. Faça login novamente.");
+                alert("Sessão expirada. Faça login novamente.");
                 window.location.href = "index.html";
             } else {
                 document.getElementById("infoUsuario").innerText = `Vistoriador responsável: ${usuarioSessao.nome} (${usuarioSessao.cpf})`;
             }
         })();
 
-        // Converter arquivo em Base64
+        // CONTROLE DOS PASSOS (1, 2 E 3)
+        function avancarPasso(passo) {
+            document.querySelectorAll(".passo-conteudo").forEach(el => el.classList.remove("ativo"));
+            document.querySelectorAll(".passo-item").forEach(el => el.classList.remove("ativo"));
+
+            document.getElementById(`passo-${passo}`).classList.add("ativo");
+            document.getElementById(`indicador-${passo}`).classList.add("ativo");
+        }
+
+        // PREVIEW DAS IMAGENS
+        function previewImagem(input, idPreview) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(idPreview);
+                    img.src = e.target.result;
+                    img.style.display = "block";
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // EXIBIR OU OCULTAR AVARIAS
+        function toggleSecaoAvarias(valor) {
+            const secao = document.getElementById("secao-detalhes-avarias");
+            secao.style.display = (valor === "Sim") ? "block" : "none";
+        }
+
+        // CONVERTER FILE EM BASE64
         function toBase64(file) {
             return new Promise((resolve, reject) => {
                 if (!file) resolve("");
@@ -297,26 +519,33 @@
             });
         }
 
-        // SUBMISSÃO DO FORMULÁRIO
+        // SUBMISSÃO FINAL DO FORMULÁRIO
         document.getElementById("formVistoria").addEventListener("submit", async function(e) {
             e.preventDefault();
 
             const btn = document.getElementById("btnSalvar");
             btn.disabled = true;
-            btn.innerText = "Enviando dados e fotos...";
+            btn.innerText = "Enviando Vistoria...";
 
             try {
                 const payload = {
-                    usuarioResponsavel: usuarioSessao.nome, // <-- Registra o usuário logado que cadastrou
+                    usuarioResponsavel: usuarioSessao.nome, // Registra quem fez o cadastro
                     motorista: document.getElementById("motorista").value,
                     cpf: document.getElementById("cpf").value,
                     placa: document.getElementById("placa").value.toUpperCase(),
                     modelo: document.getElementById("modelo").value,
                     cor: document.getElementById("cor").value,
+                    
                     fotoDianteira: await toBase64(document.getElementById("fotoDianteira").files[0]),
                     fotoTraseira: await toBase64(document.getElementById("fotoTraseira").files[0]),
                     fotoLatEsq: await toBase64(document.getElementById("fotoLatEsq").files[0]),
-                    fotoLatDir: await toBase64(document.getElementById("fotoLatDir").files[0])
+                    fotoLatDir: await toBase64(document.getElementById("fotoLatDir").files[0]),
+
+                    possuiAvarias: document.getElementById("possuiAvarias").value,
+                    descricaoAvarias: document.getElementById("descricaoAvarias").value,
+                    fotoAvaria1: await toBase64(document.getElementById("fotoAvaria1").files[0]),
+                    fotoAvaria2: await toBase64(document.getElementById("fotoAvaria2").files[0]),
+                    fotoAvaria3: await toBase64(document.getElementById("fotoAvaria3").files[0])
                 };
 
                 const response = await fetch(API_URL, {
@@ -327,17 +556,17 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    alert("Vistoria cadastrada com sucesso!");
+                    alert("Vistoria salva com sucesso!");
                     window.location.reload();
                 } else {
-                    alert("Erro ao cadastrar: " + result.message);
+                    alert("Erro ao salvar: " + result.message);
                 }
             } catch (err) {
                 alert("Erro ao conectar com o servidor.");
                 console.error(err);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Finalizar e Salvar Vistoria";
+                btn.innerText = "Finalizar Vistoria";
             }
         });
     </script>
