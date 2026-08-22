@@ -23,30 +23,44 @@
 
         /* MODAL DE DETALHES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); z-index: 1000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 100%; max-width: 900px; border-radius: 16px; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+        .modal-content { background: white; width: 100%; max-width: 950px; border-radius: 16px; padding: 24px; position: relative; max-height: 92vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
         .close-modal { position: absolute; top: 16px; right: 20px; font-size: 28px; cursor: pointer; color: #718096; font-weight: bold; }
         
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #f7fafc; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #f7fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .info-item label { display: block; font-size: 0.8rem; color: #718096; text-transform: uppercase; font-weight: bold; }
         .info-item span { font-size: 1.05rem; font-weight: 600; color: #2d3748; }
 
-        /* MAPA DO VEÍCULO E FOTOS */
-        .car-map-container { position: relative; width: 100%; min-height: 420px; background: #ffffff; border: 1px dashed #cbd5e0; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: hidden; }
-        .car-svg { width: 320px; max-width: 100%; opacity: 0.85; }
+        /* MAPA DO VEÍCULO (VISTA SUPERIOR) */
+        .car-map-container { position: relative; width: 100%; height: 480px; background: #ffffff; border: 1px dashed #cbd5e0; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: hidden; }
+        
+        .car-img-top { 
+            height: 380px; 
+            width: auto; 
+            max-width: 100%; 
+            object-fit: contain; 
+            opacity: 0.9;
+        }
 
-        /* THUMBNAILS DAS FOTOS SOBRE/AO REDOR DO CARRO */
-        .photo-card { position: absolute; background: white; border: 2px solid #cbd5e0; border-radius: 8px; padding: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.12); width: 130px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        /* THUMBNAILS DAS FOTOS AO REDOR DO CARRO */
+        .photo-card { position: absolute; background: white; border: 2px solid #cbd5e0; border-radius: 8px; padding: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.12); width: 135px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
         .photo-card:hover { transform: scale(1.08); border-color: #3182ce; z-index: 10; }
-        .photo-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; background: #e2e8f0; }
-        .photo-card span { display: block; font-size: 0.75rem; font-weight: bold; color: #4a5568; margin-top: 2px; }
+        .photo-card img { width: 100%; height: 85px; object-fit: cover; border-radius: 4px; background: #e2e8f0; }
+        .photo-card span { display: block; font-size: 0.75rem; font-weight: bold; color: #4a5568; margin-top: 3px; }
 
-        /* POSICIONAMENTO DAS FOTOS (CONFORME O SEU ESBOÇO) */
-        .pos-dianteira { top: 20px; right: 20px; }
-        .pos-traseira { top: 20px; left: 20px; }
-        .pos-lat-esquerda { bottom: 20px; left: 20px; }
-        .pos-lat-direita { bottom: 20px; right: 20px; }
+        /* POSICIONAMENTO ESTRATÉGICO PARA VISTA DO TOPO (Traseira para Baixo / Frente para Cima) */
+        .pos-dianteira { top: 15px; left: 50%; transform: translateX(-50%); }
+        .pos-dianteira:hover { transform: translateX(-50%) scale(1.08); }
 
-        /* ZOOM / LIGHTBOX */
+        .pos-traseira { bottom: 15px; left: 50%; transform: translateX(-50%); }
+        .pos-traseira:hover { transform: translateX(-50%) scale(1.08); }
+
+        .pos-lat-esquerda { top: 50%; left: 25px; transform: translateY(-50%); }
+        .pos-lat-esquerda:hover { transform: translateY(-50%) scale(1.08); }
+
+        .pos-lat-direita { top: 50%; right: 25px; transform: translateY(-50%); }
+        .pos-lat-direita:hover { transform: translateY(-50%) scale(1.08); }
+
+        /* LIGHTBOX PARA ZOOM NA FOTO */
         .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
         .lightbox img { max-width: 90%; max-height: 90vh; border-radius: 8px; }
         .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 35px; cursor: pointer; }
@@ -92,26 +106,34 @@
                 <div class="info-item"><label>Data Entrada</label><span id="det-data">-</span></div>
             </div>
 
-            <h3 style="font-size:1rem; color:#4a5568;">Inspeção Visual (Fotos do Registro)</h3>
+            <h3 style="font-size:1rem; color:#4a5568; margin-bottom:10px;">Inspeção Visual (Vista Superior)</h3>
             
             <div class="car-map-container">
-                <!-- SVG DO VEÍCULO (ILUSTRAÇÃO DA SILHUETA DO CARRO) -->
-                <svg class="car-svg" viewBox="0 0 500 200" fill="none" stroke="#4a5568" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M 50,130 C 50,130 70,80 140,70 C 180,60 250,55 330,65 C 380,75 420,100 450,120 C 465,126 470,140 460,150 C 450,160 430,160 430,160 L 70,160 C 70,160 50,160 50,130 Z" />
-                    <!-- Rodas -->
-                    <circle cx="120" cy="160" r="28" fill="#edf2f7" stroke="#2d3748" stroke-width="4"/>
-                    <circle cx="380" cy="160" r="28" fill="#edf2f7" stroke="#2d3748" stroke-width="4"/>
-                    <!-- Vidros -->
-                    <path d="M 150,72 L 230,70 L 230,110 L 120,110 Z" fill="#e2e8f0" stroke="#718096" stroke-width="2"/>
-                    <path d="M 245,70 L 320,68 L 350,110 L 245,110 Z" fill="#e2e8f0" stroke="#718096" stroke-width="2"/>
-                    <!-- Linhas de conexão (estilo diagrama) -->
-                    <line x1="380" y1="110" x2="430" y2="40" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="4"/>
-                </svg>
+                <!-- SUA IMAGEM DA VISTA DO TOPO DO VEÍCULO -->
+                <img src="Veiculos_Vistoria/Imagens_Logos/CARO.png" alt="Veículo Vista Superior" class="car-img-top">
 
-                <!-- CARD DA FOTO DIANTEIRA -->
+                <!-- CARD FOTO DIANTEIRA (FRENTE/TOPO) -->
                 <div class="photo-card pos-dianteira" id="card-dianteira" onclick="abrirZoom(this)">
                     <img id="img-dianteira" src="" alt="Dianteira">
                     <span>Dianteira</span>
+                </div>
+
+                <!-- CARD FOTO TRASEIRA (Fundo/Baixo) -->
+                <div class="photo-card pos-traseira" id="card-traseira" onclick="abrirZoom(this)">
+                    <img id="img-traseira" src="" alt="Traseira">
+                    <span>Traseira</span>
+                </div>
+
+                <!-- CARD LATERAL ESQUERDA -->
+                <div class="photo-card pos-lat-esquerda" id="card-lat-esq" onclick="abrirZoom(this)">
+                    <img id="img-lat-esq" src="" alt="Lat. Esquerda">
+                    <span>Lat. Esquerda</span>
+                </div>
+
+                <!-- CARD LATERAL DIREITA -->
+                <div class="photo-card pos-lat-direita" id="card-lat-dir" onclick="abrirZoom(this)">
+                    <img id="img-lat-dir" src="" alt="Lat. Direita">
+                    <span>Lat. Direita</span>
                 </div>
             </div>
         </div>
@@ -152,7 +174,7 @@
                 const result = await response.json();
 
                 if (result.status === "success" && result.data.length > 1) {
-                    dadosVistorias = result.data.slice(1); // Remove o cabeçalho
+                    dadosVistorias = result.data.slice(1);
                     statusMsg.style.display = 'none';
                     tabela.style.display = 'table';
 
@@ -188,18 +210,26 @@
             document.getElementById('det-placa').innerText = item[3] || '-';
             document.getElementById('det-modelo-cor').innerText = `${item[4] || '-'} / ${item[5] || '-'}`;
 
-            // Imagem Direta Rápida
-            const urlFotoDirect = converterUrlDrive(item[6]);
-            const imgDianteira = document.getElementById('img-dianteira');
-            
-            if (urlFotoDirect) {
-                imgDianteira.src = urlFotoDirect;
-                document.getElementById('card-dianteira').style.display = 'block';
-            } else {
-                document.getElementById('card-dianteira').style.display = 'none';
-            }
+            // Mapeamento das Fotos (Coluna 6 = Dianteira, Coluna 7 = Traseira, Coluna 8 = Lat. Esquerda, Coluna 9 = Lat. Direita, etc.)
+            configurarCardFoto('card-dianteira', 'img-dianteira', item[6]);
+            configurarCardFoto('card-traseira', 'img-traseira', item[7]);
+            configurarCardFoto('card-lat-esq', 'img-lat-esq', item[8]);
+            configurarCardFoto('card-lat-dir', 'img-lat-dir', item[9]);
 
             document.getElementById('modalDetalhes').style.display = 'flex';
+        }
+
+        function configurarCardFoto(cardId, imgId, urlDrive) {
+            const directUrl = converterUrlDrive(urlDrive);
+            const cardEl = document.getElementById(cardId);
+            const imgEl = document.getElementById(imgId);
+
+            if (directUrl) {
+                imgEl.src = directUrl;
+                cardEl.style.display = 'block';
+            } else {
+                cardEl.style.display = 'none';
+            }
         }
 
         function fecharModal() {
