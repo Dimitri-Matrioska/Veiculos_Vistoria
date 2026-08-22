@@ -224,6 +224,16 @@
             opacity: 0.75;
         }
 
+        /* Mensagem de Erro Integrada ao Estilo */
+        #msg-erro {
+            color: #d9534f;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
         /* =========================
            DESENVOLVEDOR
            ========================= */
@@ -332,14 +342,14 @@
                     <div class="campo">
 
                         <label for="usuario">
-                            Usuário
+                            Usuário ou CPF
                         </label>
 
                         <input
                             type="text"
                             id="usuario"
                             name="usuario"
-                            placeholder="Digite seu usuário"
+                            placeholder="Digite seu usuário ou CPF"
                             autocomplete="username"
                             required
                         >
@@ -347,7 +357,7 @@
                     </div>
 
 
-                    <div class="campo">
+                    <div class="campo" id="campo-senha" style="display: none;">
 
                         <label for="senha">
                             Senha
@@ -359,7 +369,6 @@
                             name="senha"
                             placeholder="Digite sua senha"
                             autocomplete="current-password"
-                            required
                         >
 
                     </div>
@@ -368,9 +377,12 @@
                     <button
                         type="submit"
                         class="botao-login"
+                        id="btnSubmit"
                     >
                         Entrar
                     </button>
+
+                    <div id="msg-erro"></div>
 
                 </form>
 
@@ -407,20 +419,11 @@
 
 
     <script>
-
-        /*
-         * Tempo da tela inicial.
-         * Altere aqui se quiser que o GIF permaneça
-         * mais ou menos tempo antes do login aparecer.
-         */
-
+        const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
         const TEMPO_SPLASH = 1200;
 
-
         window.addEventListener("load", function () {
-
             setTimeout(function () {
-
                 const loading = document.getElementById("loading");
                 const app = document.getElementById("app");
 
@@ -431,37 +434,69 @@
                 }, 250);
 
             }, TEMPO_SPLASH);
-
         });
 
+        // Exibe o campo de senha dinamicamente caso não seja apenas digitação numérica (ex: para usuários master/admin)
+        document.getElementById("usuario").addEventListener("input", function () {
+            const valor = this.value.trim();
+            const campoSenha = document.getElementById("campo-senha");
+            const inputSenha = document.getElementById("senha");
 
-        /*
-         * LOGIN
-         *
-         * Neste momento apenas impede o envio do formulário.
-         * Aqui posteriormente podemos colocar a autenticação
-         * real do sistema.
-         */
+            if (isNaN(valor) && valor.length > 0) {
+                campoSenha.style.display = "block";
+                inputSenha.setAttribute("required", "required");
+            } else {
+                campoSenha.style.display = "none";
+                inputSenha.removeAttribute("required");
+            }
+        });
 
-        document
-            .getElementById("loginForm")
-            .addEventListener("submit", function (event) {
+        // AUTENTICAÇÃO INTEGRADA AO APPS SCRIPT
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-                event.preventDefault();
+            const usuarioInput = document.getElementById("usuario").value.trim();
+            const senhaInput = document.getElementById("senha").value;
+            const msgErro = document.getElementById("msg-erro");
+            const btnSubmit = document.getElementById("btnSubmit");
 
-                const usuario =
-                    document.getElementById("usuario").value;
+            msgErro.style.display = "none";
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Acessando...";
 
-                const senha =
-                    document.getElementById("senha").value;
+            try {
+                const response = await fetch(`${API_URL}?action=login&identifier=${encodeURIComponent(usuarioInput)}&password=${encodeURIComponent(senhaInput)}`);
+                const result = await response.json();
 
-                console.log("Usuário:", usuario);
-                console.log("Senha:", senha);
+                if (result.status === "success") {
+                    // Salva os dados na sessão
+                    sessionStorage.setItem("usuarioLogado", JSON.stringify(result.user));
 
-                alert("Login ainda não configurado.");
-
-            });
-
+                    // Redirecionamento de acordo com o perfil cadastrado na Página2
+                    if (result.user.perfil === "VISTORIADOR") {
+                        window.location.href = "cadastro.html";
+                    } else if (result.user.perfil === "ADMINISTRADOR") {
+                        window.location.href = "admin.html";
+                    } else if (result.user.perfil === "MASTER") {
+                        window.location.href = "master.html";
+                    }
+                } else {
+                    // Se o servidor avisar que requer senha
+                    if (result.message.includes("Senha")) {
+                        document.getElementById("campo-senha").style.display = "block";
+                        document.getElementById("senha").setAttribute("required", "required");
+                    }
+                    msgErro.innerText = result.message;
+                    msgErro.style.display = "block";
+                }
+            } catch (error) {
+                msgErro.innerText = "Erro ao conectar com o servidor: " + error.message;
+                msgErro.style.display = "block";
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Entrar";
+            }
+        });
     </script>
 
 </body>
