@@ -3,132 +3,466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist de Veículo - Teste 1 Foto</title>
+
+    <title>Vistoria de Veículos</title>
+
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; padding: 16px; color: #333; margin: 0; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1 { font-size: 1.4rem; text-align: center; margin-bottom: 24px; color: #1a202c; }
-        label { display: block; margin: 16px 0 8px; font-weight: 600; font-size: 0.95rem; }
-        input, select { width: 100%; padding: 16px; border: 1px solid #cbd5e0; border-radius: 10px; font-size: 16px; margin-bottom: 8px; background: #fff; }
-        .photo-box { background: #edf2f7; border: 2px dashed #cbd5e0; padding: 20px; text-align: center; border-radius: 10px; color: #718096; font-size: 0.95rem; font-weight: 600; position: relative; margin: 20px 0; }
-        .photo-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        button[type="submit"] { width: 100%; padding: 18px; background: #2b6cb0; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; margin-top: 16px; cursor: pointer; }
-        button:disabled { background: #a0aec0; }
-        #status-msg { margin-top: 16px; padding: 12px; border-radius: 8px; display: none; text-align: center; font-weight: 600; }
-        .success { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
-        .error { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Entrada de Veículo 2 (Teste 1 Foto)</h1>
-        <form id="vehicleForm">
-            <label>Nome do Motorista</label>
-            <input type="text" id="motorista" required placeholder="Nome completo">
-            
-            <label>CPF</label>
-            <input type="tel" id="cpf" required placeholder="000.000.000-00">
-            
-            <label>Placa</label>
-            <input type="text" id="placa" required placeholder="ABC1234" style="text-transform: uppercase;">
-            
-            <label>Modelo</label>
-            <input type="text" id="modelo" required placeholder="Ex: Fiat Strada">
-            
-            <label>Cor</label>
-            <select id="cor" required>
-                <option value="">Selecione uma cor</option>
-                <option>Branco</option><option>Prata</option><option>Preto</option><option>Cinza</option><option>Vermelho</option>
-            </select>
-
-            <label>Foto de Registro (Dianteira)</label>
-            <div class="photo-box" id="label-dianteira">
-                <span id="photo-status">📸 Tirar/Selecionar Foto</span>
-                <input type="file" accept="image/*" capture="environment" id="fotoDianteira" required>
-            </div>
-
-            <button type="submit" id="btnSubmit">Registrar Entrada</button>
-        </form>
-
-        <div id="status-msg"></div>
-    </div>
-
-    <script>
-        // COLE SUA URL DA IMPLANTAÇÃO DO GOOGLE APPS SCRIPT ABAIXO
-        const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
-
-        document.getElementById('fotoDianteira').addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                const size = (e.target.files[0].size / (1024*1024)).toFixed(2);
-                document.getElementById('photo-status').innerText = `✓ Foto Selecionada (${size} MB)`;
-                document.getElementById('label-dianteira').style.background = "#c6f6d5";
-                document.getElementById('label-dianteira').style.borderColor = "#38a169";
-            }
-        });
-
-        const fileToBase64 = file => new Promise((resolve, reject) => {
-            if (!file) return resolve("");
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-
-        function showMessage(text, isError = false) {
-            const msgDiv = document.getElementById('status-msg');
-            msgDiv.style.display = 'block';
-            msgDiv.className = isError ? 'error' : 'success';
-            msgDiv.innerText = text;
+        :root {
+            --azul: #011E38;
+            --bege: #F5F1EB;
+            --branco: #FFFFFF;
         }
 
-        document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmit');
-            btn.disabled = true;
-            btn.innerText = "Lendo foto...";
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-            try {
-                const fotoFile = document.getElementById('fotoDianteira').files[0];
-                const fotoBase64 = await fileToBase64(fotoFile);
+        body {
+            min-height: 100vh;
+            background: var(--branco);
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--azul);
+        }
 
-                btn.innerText = "Enviando ao Google Drive...";
+        /* =========================
+           TELA DE CARREGAMENTO
+           ========================= */
 
-                const payload = {
-                    motorista: document.getElementById('motorista').value,
-                    cpf: document.getElementById('cpf').value,
-                    placa: document.getElementById('placa').value.toUpperCase(),
-                    modelo: document.getElementById('modelo').value,
-                    cor: document.getElementById('cor').value,
-                    fotoDianteira: fotoBase64
-                };
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: var(--branco);
 
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-                const result = await response.json();
+            z-index: 9999;
 
-                if (result.status === "success") {
-                    showMessage("✓ Sucesso! Registro e foto salvos no Drive.");
-                    document.getElementById('vehicleForm').reset();
-                    document.getElementById('photo-status').innerText = "📸 Tirar/Selecionar Foto";
-                    document.getElementById('label-dianteira').style.background = "#edf2f7";
-                    document.getElementById('label-dianteira').style.borderColor = "#cbd5e0";
-                } else {
-                    showMessage("Erro no servidor Google: " + (result.message || "Erro desconhecido"), true);
-                }
+            transition:
+                opacity 0.7s ease,
+                visibility 0.7s ease;
+        }
 
-            } catch (err) {
-                console.error(err);
-                showMessage("Erro de envio: " + err.message, true);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Registrar Entrada";
+        #loading img {
+            width: min(75vw, 320px);
+            height: auto;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* =========================
+           CONTEÚDO PRINCIPAL
+           ========================= */
+
+        #app {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px 20px;
+
+            opacity: 0;
+            transform: translateY(15px);
+
+            transition:
+                opacity 0.8s ease,
+                transform 0.8s ease;
+        }
+
+        #app.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* =========================
+           LOGO / TÍTULO
+           ========================= */
+
+        .titulo {
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitulo {
+            font-size: 14px;
+            text-align: center;
+
+            opacity: 0.7;
+
+            margin-bottom: 35px;
+        }
+
+        /* =========================
+           LOGIN
+           ========================= */
+
+        .login-box {
+            width: 100%;
+
+            background: var(--bege);
+
+            border-radius: 18px;
+
+            padding: 28px 22px;
+
+            box-shadow:
+                0 8px 25px rgba(1, 30, 56, 0.08);
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 700;
+
+            margin-bottom: 22px;
+        }
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            margin-bottom: 7px;
+        }
+
+        .campo input {
+            width: 100%;
+
+            height: 48px;
+
+            border: 1.5px solid rgba(1, 30, 56, 0.25);
+            border-radius: 10px;
+
+            padding: 0 14px;
+
+            font-size: 16px;
+            color: var(--azul);
+
+            background: var(--branco);
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .campo input:focus {
+            border-color: var(--azul);
+
+            box-shadow:
+                0 0 0 3px rgba(1, 30, 56, 0.08);
+        }
+
+        .botao-login {
+            width: 100%;
+            height: 50px;
+
+            margin-top: 8px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: var(--azul);
+            color: var(--branco);
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .botao-login:active {
+            transform: scale(0.98);
+        }
+
+        .botao-login:hover {
+            opacity: 0.92;
+        }
+
+        .esqueci {
+            display: block;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: var(--azul);
+
+            font-size: 13px;
+            text-decoration: none;
+
+            opacity: 0.75;
+        }
+
+        /* =========================
+           DESENVOLVEDOR
+           ========================= */
+
+        .desenvolvedor {
+            margin-top: 45px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .desenvolvedor span {
+            font-size: 11px;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            opacity: 0.55;
+
+            margin-bottom: 10px;
+        }
+
+        .desenvolvedor img {
+            width: 145px;
+            height: auto;
+        }
+
+        /* =========================
+           RESPONSIVIDADE
+           ========================= */
+
+        @media (max-height: 700px) {
+
+            #app {
+                padding-top: 20px;
+                padding-bottom: 20px;
             }
+
+            .subtitulo {
+                margin-bottom: 22px;
+            }
+
+            .desenvolvedor {
+                margin-top: 25px;
+            }
+        }
+
+        @media (min-width: 600px) {
+
+            #app {
+                padding: 40px;
+            }
+
+            .container {
+                max-width: 390px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         TELA DE CARREGAMENTO
+         ========================= -->
+
+    <div id="loading">
+
+        <img
+            src="Imagens_Logos/Logo_animada2.gif"
+            alt="Carregando"
+        >
+
+    </div>
+
+
+    <!-- =========================
+         APLICAÇÃO
+         ========================= -->
+
+    <main id="app">
+
+        <div class="container">
+
+            <h1 class="titulo">
+                Vistoria de Veículos
+            </h1>
+
+            <p class="subtitulo">
+                Sistema de controle e inspeção
+            </p>
+
+
+            <!-- LOGIN -->
+
+            <section class="login-box">
+
+                <h2 class="login-title">
+                    Acessar sistema
+                </h2>
+
+                <form id="loginForm">
+
+                    <div class="campo">
+
+                        <label for="usuario">
+                            Usuário
+                        </label>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Digite seu usuário"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="senha">
+                            Senha
+                        </label>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="botao-login"
+                    >
+                        Entrar
+                    </button>
+
+                </form>
+
+
+                <a
+                    href="#"
+                    class="esqueci"
+                    onclick="alert('Entre em contato com o administrador do sistema.'); return false;"
+                >
+                    Esqueci minha senha
+                </a>
+
+            </section>
+
+
+            <!-- DESENVOLVEDOR -->
+
+            <div class="desenvolvedor">
+
+                <span>
+                    Desenvolvido por
+                </span>
+
+                <img
+                    src="Imagens_Logos/Logo_MATRIOSKA.png"
+                    alt="MATRIOSKA Desenvolvimento e Soluções em Planejamento"
+                >
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /*
+         * Tempo da tela inicial.
+         * Altere aqui se quiser que o GIF permaneça
+         * mais ou menos tempo antes do login aparecer.
+         */
+
+        const TEMPO_SPLASH = 2500;
+
+
+        window.addEventListener("load", function () {
+
+            setTimeout(function () {
+
+                const loading = document.getElementById("loading");
+                const app = document.getElementById("app");
+
+                loading.classList.add("hidden");
+
+                setTimeout(function () {
+                    app.classList.add("visible");
+                }, 250);
+
+            }, TEMPO_SPLASH);
+
         });
+
+
+        /*
+         * LOGIN
+         *
+         * Neste momento apenas impede o envio do formulário.
+         * Aqui posteriormente podemos colocar a autenticação
+         * real do sistema.
+         */
+
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", function (event) {
+
+                event.preventDefault();
+
+                const usuario =
+                    document.getElementById("usuario").value;
+
+                const senha =
+                    document.getElementById("senha").value;
+
+                console.log("Usuário:", usuario);
+                console.log("Senha:", senha);
+
+                alert("Login ainda não configurado.");
+
+            });
+
     </script>
+
 </body>
 </html>
