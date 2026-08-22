@@ -473,6 +473,60 @@
             }
         }
 
+// Função para converter links normais do Google Drive em links diretos de imagem
+function formatarUrlImagem(url) {
+    if (!url || typeof url !== "string" || !url.startsWith("http")) {
+        return "https://placehold.co/200x150/e0dcd6/011e38?text=Sem+Foto";
+    }
+    // Converte /file/d/ID/view para o formato de renderização de imagem
+    if (url.includes("drive.google.com")) {
+        const match = url.match(/\/d\/([^\/\?]+)/);
+        if (match && match[1]) {
+            return "https://lh3.googleusercontent.com/d/" + match[1];
+        }
+    }
+    return url;
+}
+
+function abrirDetalhes(placa) {
+    const item = dadosVistorias.find(v => String(v[4]).toUpperCase() === placa.toUpperCase());
+    if (!item) return;
+
+    document.getElementById("modalMotorista").innerText = `Motorista: ${item[2] || "Não informado"}`;
+    document.getElementById("modalPlaca").innerText = `Placa: ${item[4] || "-"}`;
+
+    // Passa o link pela função formatarUrlImagem
+    document.getElementById("imgDianteira").src = formatarUrlImagem(item[7]);
+    document.getElementById("imgTraseira").src  = formatarUrlImagem(item[8]);
+    document.getElementById("imgLatEsq").src    = formatarUrlImagem(item[9]);
+    document.getElementById("imgLatDir").src    = formatarUrlImagem(item[10]);
+
+    const possuiAvaria = String(item[11]).toUpperCase().trim() === "SIM";
+    const boxAvarias = document.getElementById("boxAvarias");
+
+    if (possuiAvaria) {
+        boxAvarias.style.display = "block";
+        document.getElementById("descAvarias").innerText = item[12] || "Sem descrição detalhada.";
+
+        const containerFotos = document.getElementById("fotosAvariasContainer");
+        containerFotos.innerHTML = "";
+
+        for (let i = 13; i <= 17; i++) {
+            if (item[i] && String(item[i]).startsWith("http")) {
+                const urlConvertida = formatarUrlImagem(item[i]);
+                const img = document.createElement("img");
+                img.src = urlConvertida;
+                img.onclick = () => abrirZoom(urlConvertida);
+                containerFotos.appendChild(img);
+            }
+        }
+    } else {
+        boxAvarias.style.display = "none";
+    }
+
+    document.getElementById("modalDetalhes").style.display = "flex";
+}
+        
         function renderizarTabela(lista) {
             const tbody = document.getElementById("tabelaCorpo");
             tbody.innerHTML = "";
