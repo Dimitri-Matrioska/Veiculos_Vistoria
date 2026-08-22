@@ -3,67 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin</title>
+    <title>||</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        h1 { text-align: center; color: #1a202c; }
-        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card-header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 1px solid #edf2f7; padding-bottom: 8px; margin-bottom: 12px; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; }
-        .badge-dano { background: #feb2b2; color: #9b2c2c; }
-        .badge-ok { background: #c6f6d5; color: #22543d; }
-        .gallery { display: flex; gap: 8px; overflow-x: auto; margin-top: 10px; }
-        .gallery a { display: inline-block; padding: 8px 12px; background: #3182ce; color: white; border-radius: 6px; text-decoration: none; font-size: 0.8rem; white-space: nowrap; }
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { font-size: 1.6rem; color: #1a202c; margin-top: 0; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+        button { padding: 10px 18px; background: #2b6cb0; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #2c5282; }
+        .table-responsive { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #edf2f7; color: #2d3748; }
+        tr:hover { background-color: #f7fafc; }
+        .photo-link { color: #3182ce; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+        .photo-link:hover { text-decoration: underline; }
+        #status-info { margin: 15px 0; padding: 12px; border-radius: 8px; font-weight: 500; }
+        .loading { background: #ebf8ff; color: #2b6cb0; }
+        .error { background: #fed7d7; color: #9b2c2c; }
+        .empty { background: #feebc8; color: #742a2a; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Painel de Controle - Registros</h1>
-        <div id="loading">Carregando dados...</div>
-        <div id="recordsList"></div>
+        <div class="controls">
+            <h1>Painel de Controle</h1>
+            <button onclick="carregarDados()">🔄 Atualizar Dados</button>
+        </div>
+
+        <div id="status-info" class="loading">Carregando dados...</div>
+
+        <div class="table-responsive">
+            <table id="tabela-dados" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Motorista</th>
+                        <th>CPF</th>
+                        <th>Placa</th>
+                        <th>Modelo</th>
+                        <th>Cor</th>
+                        <th>Foto Dianteira</th>
+                    </tr>
+                </thead>
+                <tbody id="corpo-tabela"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        // COLE SUA URL DA IMPLANTAÇÃO DO GOOGLE APPS SCRIPT ABAIXO
         const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
 
-        async function loadData() {
+        async function carregarDados() {
+            const statusDiv = document.getElementById('status-info');
+            const tabela = document.getElementById('tabela-dados');
+            const tbody = document.getElementById('corpo-tabela');
+
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'loading';
+            statusDiv.innerText = 'Carregando dados...';
+            tabela.style.display = 'none';
+            tbody.innerHTML = '';
+
             try {
                 const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                document.getElementById('loading').style.display = 'none';
-                const container = document.getElementById('recordsList');
-                
-                data.reverse().forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <span>${item.placa} - ${item.modelo} (${item.cor})</span>
-                            <span class="badge ${item.temDano === 'SIM' ? 'badge-dano' : 'badge-ok'}">
-                                ${item.temDano === 'SIM' ? 'COM DANO' : 'SEM DANO'}
-                            </span>
-                        </div>
-                        <p><strong>Motorista:</strong> ${item.motorista} | <strong>CPF:</strong> ${item.cpf}</p>
-                        <p><strong>Data/Hora:</strong> ${new Date(item.timestamp).toLocaleString('pt-BR')}</p>
-                        ${item.descricaoDano ? `<p><strong>Descrição do Dano:</strong> ${item.descricaoDano}</p>` : ''}
-                        <div class="gallery">
-                            ${item.fotos.dianteira ? `<a href="${item.fotos.dianteira}" target="_blank">Dianteira</a>` : ''}
-                            ${item.fotos.traseira ? `<a href="${item.fotos.traseira}" target="_blank">Traseira</a>` : ''}
-                            ${item.fotos.latEsq ? `<a href="${item.fotos.latEsq}" target="_blank">Lat. Esq.</a>` : ''}
-                            ${item.fotos.latDir ? `<a href="${item.fotos.latDir}" target="_blank">Lat. Dir.</a>` : ''}
-                            ${item.fotos.dano ? `<a href="${item.fotos.dano}" target="_blank" style="background:#e53e3e">Foto Dano</a>` : ''}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    const rows = result.data;
+
+                    if (!rows || rows.length <= 1) {
+                        statusDiv.className = 'empty';
+                        statusDiv.innerText = 'Nenhum registro encontrado na planilha.';
+                        return;
+                    }
+
+                    statusDiv.style.display = 'none';
+                    tabela.style.display = 'table';
+
+                    // Ignora o cabeçalho (linha 0) e itera pelas demais linhas
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const tr = document.createElement('tr');
+
+                        const dataFormatada = row[0] ? new Date(row[0]).toLocaleString('pt-BR') : '-';
+                        const fotoHtml = row[6] ? `<a href="${row[6]}" target="_blank" class="photo-link">📷 Ver Foto</a>` : 'Sem foto';
+
+                        tr.innerHTML = `
+                            <td>${dataFormatada}</td>
+                            <td>${row[1] || '-'}</td>
+                            <td>${row[2] || '-'}</td>
+                            <td>${row[3] || '-'}</td>
+                            <td>${row[4] || '-'}</td>
+                            <td>${row[5] || '-'}</td>
+                            <td>${fotoHtml}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                } else {
+                    throw new Error(result.message || "Erro retornado do servidor");
+                }
             } catch (err) {
-                document.getElementById('loading').innerText = "Erro ao carregar os dados.";
+                console.error(err);
+                statusDiv.className = 'error';
+                statusDiv.innerText = 'Erro ao carregar dados: ' + err.message;
             }
         }
 
-        loadData();
+        // Carrega os dados automaticamente ao abrir a página
+        carregarDados();
     </script>
 </body>
 </html>
