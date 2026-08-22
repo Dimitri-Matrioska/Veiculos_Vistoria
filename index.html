@@ -419,90 +419,132 @@
 
 
    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzjyYCR__0C0RLLkiTEwQ0SV_HbNJo2bWA40ATiwTutGWeEcFmSkfgf1WkOsFA6BYin5g/exec";
-        const TEMPO_SPLASH = 1200;
+    const API_URL = "https://script.google.com/macros/s/AKfycbzjyYCR__0C0RLLkiTEwQ0SV_HbNJo2bWA40ATiwTutGWeEcFmSkfgf1WkOsFA6BYin5g/exec";
+  
+    
+    const TEMPO_SPLASH = 1200;
 
-        window.addEventListener("load", function () {
+    window.addEventListener("load", function () {
+        setTimeout(function () {
+            const loading = document.getElementById("loading");
+            const app = document.getElementById("app");
+
+            loading.classList.add("hidden");
+
             setTimeout(function () {
-                const loading = document.getElementById("loading");
-                const app = document.getElementById("app");
+                app.classList.add("visible");
+            }, 250);
 
-                loading.classList.add("hidden");
+        }, TEMPO_SPLASH);
+    });
 
-                setTimeout(function () {
-                    app.classList.add("visible");
-                }, 250);
+    const inputUsuario = document.getElementById("usuario");
+    const campoSenha = document.getElementById("campo-senha");
+    const inputSenha = document.getElementById("senha");
+    const msgErro = document.getElementById("msg-erro");
+    const btnSubmit = document.getElementById("btnSubmit");
 
-            }, TEMPO_SPLASH);
-        });
+    // Monitora a digitação no campo de usuário/CPF
+    inputUsuario.addEventListener("input", async function () {
+        const valor = this.value.trim();
 
-        // Exibe o campo de senha se o valor não for estritamente numérico ou se tiver letras
-        document.getElementById("usuario").addEventListener("input", function () {
-            const valor = this.value.trim();
-            const campoSenha = document.getElementById("campo-senha");
-            const inputSenha = document.getElementById("senha");
+        // Limpa mensagens anteriores ao redefinir campo
+        msgErro.style.display = "none";
 
-            if (isNaN(valor) && valor.length > 0) {
-                campoSenha.style.display = "block";
-                inputSenha.setAttribute("required", "required");
-            } else {
-                campoSenha.style.display = "none";
-                inputSenha.removeAttribute("required");
-            }
-        });
+        // Se o valor contiver letras (ex: nome), exibe o campo de senha imediatamente
+        if (isNaN(valor) && valor.length > 2) {
+            exibirCampoSenha(true);
+            return;
+        }
 
-        // AUTENTICAÇÃO INTEGRADA AO APPS SCRIPT
-        document.getElementById("loginForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const usuarioInput = document.getElementById("usuario").value.trim();
-            const senhaInput = document.getElementById("senha").value.trim();
-            const msgErro = document.getElementById("msg-erro");
-            const btnSubmit = document.getElementById("btnSubmit");
-
-            msgErro.style.display = "none";
+        // Se for um CPF completo (11 dígitos)
+        if (valor.length === 11 && !isNaN(valor)) {
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "Acessando...";
+            btnSubmit.innerText = "Verificando...";
 
             try {
-                const response = await fetch(`${API_URL}?action=login&identifier=${encodeURIComponent(usuarioInput)}&password=${encodeURIComponent(senhaInput)}`);
+                // Consulta prévia do perfil
+                const response = await fetch(`${API_URL}?action=login&identifier=${encodeURIComponent(valor)}&password=`);
                 const result = await response.json();
 
-                if (result.status === "success" && result.user && result.user.perfil) {
-                    // Salva os dados na sessão
-                    sessionStorage.setItem("usuarioLogado", JSON.stringify(result.user));
-
-                    const perfil = String(result.user.perfil).toUpperCase().trim();
-
-                    // Redirecionamento baseado no perfil cadastrado na Página2
-                    if (perfil === "VISTORIADOR") {
-                        window.location.href = "cadastro.html";
-                    } else if (perfil === "ADMINISTRADOR") {
-                        window.location.href = "admin.html";
-                    } else if (perfil === "MASTER") {
-                        window.location.href = "master.html";
-                    } else {
-                        msgErro.innerText = "Perfil de acesso não reconhecido.";
-                        msgErro.style.display = "block";
-                    }
+                if (result.status === "error" && result.message === "Senha incorreta.") {
+                    // Significa que o usuário foi achado e EXIGE senha (ADMIN/MASTER)
+                    exibirCampoSenha(true);
+                    inputSenha.focus();
+                } else if (result.status === "success") {
+                    // É Vistoriador e não exige senha -> Executa login automático direto!
+                    efetuarRedirecionamento(result.user);
                 } else {
-                    // Exibe a mensagem de erro retornada pelo Apps Script
-                    if (result.message && result.message.includes("Senha")) {
-                        document.getElementById("campo-senha").style.display = "block";
-                        document.getElementById("senha").setAttribute("required", "required");
-                    }
-                    msgErro.innerText = result.message || "Usuário ou senha inválidos.";
-                    msgErro.style.display = "block";
+                    exibirCampoSenha(false);
                 }
-            } catch (error) {
-                msgErro.innerText = "Erro na resposta do servidor. Verifique o cadastro no Apps Script.";
-                msgErro.style.display = "block";
+            } catch (err) {
+                console.error("Erro na consulta do perfil:", err);
             } finally {
                 btnSubmit.disabled = false;
                 btnSubmit.innerText = "Entrar";
             }
-        });
-    </script>
+        } else if (valor.length < 11 && !isNaN(valor)) {
+            exibirCampoSenha(false);
+        }
+    });
 
-</body>
-</html>
+    // Submissão do Formulário
+    document.getElementById("loginForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const usuarioInput = inputUsuario.value.trim();
+        const senhaInput = inputSenha.value.trim();
+
+        msgErro.style.display = "none";
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "Acessando...";
+
+        try {
+            const response = await fetch(`${API_URL}?action=login&identifier=${encodeURIComponent(usuarioInput)}&password=${encodeURIComponent(senhaInput)}`);
+            const result = await response.json();
+
+            if (result.status === "success" && result.user) {
+                efetuarRedirecionamento(result.user);
+            } else {
+                if (result.message && result.message.includes("Senha")) {
+                    exibirCampoSenha(true);
+                }
+                msgErro.innerText = result.message || "Usuário ou senha inválidos.";
+                msgErro.style.display = "block";
+            }
+        } catch (error) {
+            msgErro.innerText = "Erro ao conectar com o servidor.";
+            msgErro.style.display = "block";
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "Entrar";
+        }
+    });
+
+    function exibirCampoSenha(exibir) {
+        if (exibir) {
+            campoSenha.style.display = "block";
+            inputSenha.setAttribute("required", "required");
+        } else {
+            campoSenha.style.display = "none";
+            inputSenha.removeAttribute("required");
+            inputSenha.value = "";
+        }
+    }
+
+    function efetuarRedirecionamento(user) {
+        sessionStorage.setItem("usuarioLogado", JSON.stringify(user));
+        const perfil = String(user.perfil).toUpperCase().trim();
+
+        if (perfil === "VISTORIADOR") {
+            window.location.href = "cadastro.html";
+        } else if (perfil === "ADMINISTRADOR") {
+            window.location.href = "admin.html";
+        } else if (perfil === "MASTER") {
+            window.location.href = "master.html";
+        } else {
+            msgErro.innerText = "Perfil de acesso não reconhecido.";
+            msgErro.style.display = "block";
+        }
+    }
+</script>
