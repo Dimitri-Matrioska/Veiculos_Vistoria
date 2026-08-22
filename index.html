@@ -418,7 +418,7 @@
     </main>
 
 
-    <script>
+   <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
         const TEMPO_SPLASH = 1200;
 
@@ -436,7 +436,7 @@
             }, TEMPO_SPLASH);
         });
 
-        // Exibe o campo de senha dinamicamente caso não seja apenas digitação numérica (ex: para usuários master/admin)
+        // Exibe o campo de senha se o valor não for estritamente numérico ou se tiver letras
         document.getElementById("usuario").addEventListener("input", function () {
             const valor = this.value.trim();
             const campoSenha = document.getElementById("campo-senha");
@@ -456,7 +456,7 @@
             event.preventDefault();
 
             const usuarioInput = document.getElementById("usuario").value.trim();
-            const senhaInput = document.getElementById("senha").value;
+            const senhaInput = document.getElementById("senha").value.trim();
             const msgErro = document.getElementById("msg-erro");
             const btnSubmit = document.getElementById("btnSubmit");
 
@@ -468,29 +468,34 @@
                 const response = await fetch(`${API_URL}?action=login&identifier=${encodeURIComponent(usuarioInput)}&password=${encodeURIComponent(senhaInput)}`);
                 const result = await response.json();
 
-                if (result.status === "success") {
+                if (result.status === "success" && result.user && result.user.perfil) {
                     // Salva os dados na sessão
                     sessionStorage.setItem("usuarioLogado", JSON.stringify(result.user));
 
-                    // Redirecionamento de acordo com o perfil cadastrado na Página2
-                    if (result.user.perfil === "VISTORIADOR") {
+                    const perfil = String(result.user.perfil).toUpperCase().trim();
+
+                    // Redirecionamento baseado no perfil cadastrado na Página2
+                    if (perfil === "VISTORIADOR") {
                         window.location.href = "cadastro.html";
-                    } else if (result.user.perfil === "ADMINISTRADOR") {
+                    } else if (perfil === "ADMINISTRADOR") {
                         window.location.href = "admin.html";
-                    } else if (result.user.perfil === "MASTER") {
+                    } else if (perfil === "MASTER") {
                         window.location.href = "master.html";
+                    } else {
+                        msgErro.innerText = "Perfil de acesso não reconhecido.";
+                        msgErro.style.display = "block";
                     }
                 } else {
-                    // Se o servidor avisar que requer senha
-                    if (result.message.includes("Senha")) {
+                    // Exibe a mensagem de erro retornada pelo Apps Script
+                    if (result.message && result.message.includes("Senha")) {
                         document.getElementById("campo-senha").style.display = "block";
                         document.getElementById("senha").setAttribute("required", "required");
                     }
-                    msgErro.innerText = result.message;
+                    msgErro.innerText = result.message || "Usuário ou senha inválidos.";
                     msgErro.style.display = "block";
                 }
             } catch (error) {
-                msgErro.innerText = "Erro ao conectar com o servidor: " + error.message;
+                msgErro.innerText = "Erro na resposta do servidor. Verifique o cadastro no Apps Script.";
                 msgErro.style.display = "block";
             } finally {
                 btnSubmit.disabled = false;
