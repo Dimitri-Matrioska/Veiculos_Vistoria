@@ -473,14 +473,16 @@
             }
         }
 
-// Função para converter links normais do Google Drive em links diretos de imagem
+// Função que converte links padrão do Google Drive para URLs de renderização de imagem
 function formatarUrlImagem(url) {
     if (!url || typeof url !== "string" || !url.startsWith("http")) {
         return "https://placehold.co/200x150/e0dcd6/011e38?text=Sem+Foto";
     }
-    // Converte /file/d/ID/view para o formato de renderização de imagem
-    if (url.includes("drive.google.com")) {
-        const match = url.match(/\/d\/([^\/\?]+)/);
+    
+    // Se for link do Google Drive, extrai o ID do arquivo e converte para imagem direta
+    if (url.includes("drive.google.com") || url.includes("googleusercontent.com")) {
+        // Tenta extrair o ID da URL
+        const match = url.match(/\/d\/([^\/\?]+)/) || url.match(/id=([^\&]+)/);
         if (match && match[1]) {
             return "https://lh3.googleusercontent.com/d/" + match[1];
         }
@@ -495,7 +497,7 @@ function abrirDetalhes(placa) {
     document.getElementById("modalMotorista").innerText = `Motorista: ${item[2] || "Não informado"}`;
     document.getElementById("modalPlaca").innerText = `Placa: ${item[4] || "-"}`;
 
-    // Passa o link pela função formatarUrlImagem
+    // Passa todos os links das fotos pela função formatarUrlImagem
     document.getElementById("imgDianteira").src = formatarUrlImagem(item[7]);
     document.getElementById("imgTraseira").src  = formatarUrlImagem(item[8]);
     document.getElementById("imgLatEsq").src    = formatarUrlImagem(item[9]);
@@ -513,10 +515,10 @@ function abrirDetalhes(placa) {
 
         for (let i = 13; i <= 17; i++) {
             if (item[i] && String(item[i]).startsWith("http")) {
-                const urlConvertida = formatarUrlImagem(item[i]);
+                const urlTratada = formatarUrlImagem(item[i]);
                 const img = document.createElement("img");
-                img.src = urlConvertida;
-                img.onclick = () => abrirZoom(urlConvertida);
+                img.src = urlTratada;
+                img.onclick = () => abrirZoom(urlTratada);
                 containerFotos.appendChild(img);
             }
         }
