@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Registros de Veículos</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; color: #1a202c; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 1px solid #edf2f7; padding-bottom: 8px; margin-bottom: 12px; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; }
+        .badge-dano { background: #feb2b2; color: #9b2c2c; }
+        .badge-ok { background: #c6f6d5; color: #22543d; }
+        .gallery { display: flex; gap: 8px; overflow-x: auto; margin-top: 10px; }
+        .gallery a { display: inline-block; padding: 8px 12px; background: #3182ce; color: white; border-radius: 6px; text-decoration: none; font-size: 0.8rem; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Painel de Controle - Registros</h1>
+        <div id="loading">Carregando dados...</div>
+        <div id="recordsList"></div>
+    </div>
+
+    <script>
+        const API_URL = "COLE_AQUI_A_URL_DO_GOOGLE_APPS_SCRIPT";
+
+        async function loadData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                const container = document.getElementById('recordsList');
+                
+                data.reverse().forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <span>${item.placa} - ${item.modelo} (${item.cor})</span>
+                            <span class="badge ${item.temDano === 'SIM' ? 'badge-dano' : 'badge-ok'}">
+                                ${item.temDano === 'SIM' ? 'COM DANO' : 'SEM DANO'}
+                            </span>
+                        </div>
+                        <p><strong>Motorista:</strong> ${item.motorista} | <strong>CPF:</strong> ${item.cpf}</p>
+                        <p><strong>Data/Hora:</strong> ${new Date(item.timestamp).toLocaleString('pt-BR')}</p>
+                        ${item.descricaoDano ? `<p><strong>Descrição do Dano:</strong> ${item.descricaoDano}</p>` : ''}
+                        <div class="gallery">
+                            ${item.fotos.dianteira ? `<a href="${item.fotos.dianteira}" target="_blank">Dianteira</a>` : ''}
+                            ${item.fotos.traseira ? `<a href="${item.fotos.traseira}" target="_blank">Traseira</a>` : ''}
+                            ${item.fotos.latEsq ? `<a href="${item.fotos.latEsq}" target="_blank">Lat. Esq.</a>` : ''}
+                            ${item.fotos.latDir ? `<a href="${item.fotos.latDir}" target="_blank">Lat. Dir.</a>` : ''}
+                            ${item.fotos.dano ? `<a href="${item.fotos.dano}" target="_blank" style="background:#e53e3e">Foto Dano</a>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                document.getElementById('loading').innerText = "Erro ao carregar os dados.";
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
