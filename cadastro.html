@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Vistoria Veicular</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 15px; color: #333; }
+        .card { background: white; max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1, h2 { color: #1a365d; text-align: center; margin-top: 0; }
+        
+        /* Indicador de Etapas */
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 20px; position: relative; }
+        .step-indicator::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background: #e2e8f0; z-index: 1; }
+        .step-circle { width: 32px; height: 32px; border-radius: 50%; background: #e2e8f0; color: #718096; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 2; position: relative; }
+        .step-circle.active { background: #3182ce; color: white; }
+        .step-circle.done { background: #38a169; color: white; }
+
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+
+        label { display: block; margin-top: 12px; font-weight: bold; font-size: 0.9rem; color: #4a5568; }
+        input[type="text"] { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 1rem; }
+
+        .btn-container { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px; }
+        button { padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; flex: 1; transition: 0.2s; }
+        .btn-next { background: #3182ce; color: white; }
+        .btn-prev { background: #cbd5e0; color: #4a5568; }
+        .btn-submit { background: #38a169; color: white; }
+        .btn-option { background: #edf2f7; color: #2d3748; border: 2px solid #cbd5e0; }
+        .btn-option.selected { background: #3182ce; color: white; border-color: #3182ce; }
+
+        /* MAPA DE FOTOS DO VEÍCULO */
+        .car-map-container { position: relative; width: 100%; height: 420px; background: #f8fafc; border: 1px dashed #cbd5e0; border-radius: 12px; margin-top: 15px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .car-img-top { height: 320px; width: auto; max-width: 100%; object-fit: contain; }
+
+        .photo-box { position: absolute; background: white; border: 2px dashed #3182ce; border-radius: 8px; width: 110px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; padding: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; display: none; }
+        .photo-box span { font-size: 0.75rem; font-weight: bold; color: #2b6cb0; }
+
+        /* Posicionamento ao redor da imagem CARRO.png */
+        .pos-dianteira { top: 10px; left: 50%; transform: translateX(-50%); }
+        .pos-traseira { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .pos-lat-esq { top: 50%; left: 10px; transform: translateY(-50%); }
+        .pos-lat-dir { top: 50%; right: 10px; transform: translateY(-50%); }
+
+        /* SEÇÃO DE AVARIAS */
+        .avaria-card { background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px; padding: 12px; margin-top: 12px; }
+        .avaria-card h4 { margin: 0 0 8px 0; color: #dd6b20; font-size: 0.95rem; }
+
+        /* INPUT ESCONDIDO DE CÂMERA */
+        input[type="file"] { display: none; }
+        #loading { display: none; text-align: center; font-weight: bold; color: #3182ce; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Cadastro de Vistoria</h1>
+
+    <!-- Indicador de Etapas -->
+    <div class="step-indicator">
+        <div class="step-circle active" id="circle-1">1</div>
+        <div class="step-circle" id="circle-2">2</div>
+        <div class="step-circle" id="circle-3">3</div>
+    </div>
+
+    <form id="vistoriaForm">
+        <!-- ETAPA 1: DADOS DO VEÍCULO -->
+        <div class="step-content active" id="step-1">
+            <h2>Dados Gerais</h2>
+            
+            <label>Motorista</label>
+            <input type="text" id="motorista" required placeholder="Nome do motorista">
+
+            <label>CPF</label>
+            <input type="text" id="cpf" required placeholder="000.000.000-00">
+
+            <label>Placa do Veículo</label>
+            <input type="text" id="placa" required placeholder="ABC-1234">
+
+            <label>Modelo</label>
+            <input type="text" id="modelo" required placeholder="Ex: Gol 1.0">
+
+            <label>Cor</label>
+            <input type="text" id="cor" required placeholder="Ex: Branco">
+
+            <div class="btn-container">
+                <div></div>
+                <button type="button" class="btn-next" onclick="nextStep(2)">Avançar para Fotos ➡️</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 2: FOTOS DO VEÍCULO -->
+        <div class="step-content" id="step-2">
+            <h2>Fotos das Posições</h2>
+            <p style="font-size:0.85rem; text-align:center; color:#718096; margin-bottom:5px;">
+                Toque nos quadros para abrir a câmera e fotografar cada lado:
+            </p>
+
+            <div class="car-map-container">
+                <img src="./Veiculos_Vistoria/Imagens_Logos/CARRO.png" alt="Veículo Vista Superior" class="car-img-top">
+
+                <!-- Quadros de Fotos -->
+                <div class="photo-box pos-dianteira" onclick="triggerCamera('input-dianteira')">
+                    <img id="prev-dianteira">
+                    <span id="label-dianteira">📷 Dianteira</span>
+                </div>
+                <input type="file" id="input-dianteira" accept="image/*" capture="environment" onchange="previewPhoto(this, 'prev-dianteira', 'label-dianteira')">
+
+                <div class="photo-box pos-traseira" onclick="triggerCamera('input-traseira')">
+                    <img id="prev-traseira">
+                    <span id="label-traseira">📷 Traseira</span>
+                </div>
+                <input type="file" id="input-traseira" accept="image/*" capture="environment" onchange="previewPhoto(this, 'prev-traseira', 'label-traseira')">
+
+                <div class="photo-box pos-lat-esq" onclick="triggerCamera('input-lat-esq')">
+                    <img id="prev-lat-esq">
+                    <span id="label-lat-esq">📷 Lat. Esquerda</span>
+                </div>
+                <input type="file" id="input-lat-esq" accept="image/*" capture="environment" onchange="previewPhoto(this, 'prev-lat-esq', 'label-lat-esq')">
+
+                <div class="photo-box pos-lat-dir" onclick="triggerCamera('input-lat-dir')">
+                    <img id="prev-lat-dir">
+                    <span id="label-lat-dir">📷 Lat. Direita</span>
+                </div>
+                <input type="file" id="input-lat-dir" accept="image/*" capture="environment" onchange="previewPhoto(this, 'prev-lat-dir', 'label-lat-dir')">
+            </div>
+
+            <div class="btn-container">
+                <button type="button" class="btn-prev" onclick="prevStep(1)">⬅️ Voltar</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)">Avançar ➡️</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 3: AVARIAS E CONCLUSÃO -->
+        <div class="step-content" id="step-3">
+            <h2>Avarias do Veículo</h2>
+            <p style="text-align:center; font-weight:bold;">Indicar avaria no veículo?</p>
+
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button type="button" class="btn-option" id="btn-avaria-nao" onclick="setAvariaOption(false)">Não</button>
+                <button type="button" class="btn-option" id="btn-avaria-sim" onclick="setAvariaOption(true)">Sim</button>
+            </div>
+
+            <!-- Painel de Adicionar Avarias (Aparece se clicar em Sim) -->
+            <div id="section-avarias" style="display:none;">
+                <div id="lista-avarias"></div>
+                <button type="button" id="btn-add-avaria" style="background:#ed8936; color:white; margin-top:10px;" onclick="addAvariaField()">+ Adicionar Avaria (<span id="count-avarias">0</span>/5)</button>
+            </div>
+
+            <div id="loading">⌛ Enviando vistoria e salvando fotos... Aguarde!</div>
+
+            <div class="btn-container">
+                <button type="button" class="btn-prev" id="btn-back-3" onclick="prevStep(2)">⬅️ Voltar</button>
+                <button type="button" class="btn-submit" id="btn-final-submit" style="display:none;" onclick="enviarCadastro()">✅ Concluir Vistoria</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
+    
+    let currentStep = 1;
+    let photosData = {};
+    let avariasCount = 0;
+    let possuiAvarias = false;
+
+    function nextStep(step) {
+        if (currentStep === 1) {
+            if (!document.getElementById('motorista').value || !document.getElementById('placa').value) {
+                alert("Por favor, preencha pelo menos o Motorista e a Placa antes de avançar.");
+                return;
+            }
+        }
+        showStep(step);
+    }
+
+    function prevStep(step) {
+        showStep(step);
+    }
+
+    function showStep(step) {
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(`step-${step}`).classList.add('active');
+
+        for (let i = 1; i <= 3; i++) {
+            const circle = document.getElementById(`circle-${i}`);
+            circle.classList.remove('active', 'done');
+            if (i === step) circle.classList.add('active');
+            else if (i < step) circle.classList.add('done');
+        }
+        currentStep = step;
+    }
+
+    /* CAPTURA DE FOTOS */
+    function triggerCamera(inputId) {
+        document.getElementById(inputId).click();
+    }
+
+    function previewPhoto(input, imgId, labelId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgEl = document.getElementById(imgId);
+                const labelEl = document.getElementById(labelId);
+                
+                imgEl.src = e.target.result;
+                imgEl.style.display = 'block';
+                labelEl.style.display = 'none';
+
+                // Guarda a foto codificada em Base64
+                photosData[input.id] = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    /* SEÇÃO DE AVARIAS */
+    function setAvariaOption(temAvaria) {
+        possuiAvarias = temAvaria;
+        const btnSim = document.getElementById('btn-avaria-sim');
+        const btnNao = document.getElementById('btn-avaria-nao');
+        const secAvarias = document.getElementById('section-avarias');
+        const btnSubmit = document.getElementById('btn-final-submit');
+
+        if (temAvaria) {
+            btnSim.classList.add('selected');
+            btnNao.classList.remove('selected');
+            secAvarias.style.display = 'block';
+            if (avariasCount === 0) addAvariaField();
+        } else {
+            btnNao.classList.add('selected');
+            btnSim.classList.remove('selected');
+            secAvarias.style.display = 'none';
+        }
+        btnSubmit.style.display = 'block';
+    }
+
+    function addAvariaField() {
+        if (avariasCount >= 5) {
+            alert("Limite máximo de 5 avarias atingido.");
+            return;
+        }
+        avariasCount++;
+        document.getElementById('count-avarias').innerText = avariasCount;
+
+        const container = document.getElementById('lista-avarias');
+        const div = document.createElement('div');
+        div.className = 'avaria-card';
+        div.id = `avaria-box-${avariasCount}`;
+        div.innerHTML = `
+            <h4>Avaria #${avariasCount}</h4>
+            <label>Descrição do Dano</label>
+            <input type="text" class="desc-avaria" placeholder="Ex: Risco profundo na porta esquerda">
+            
+            <label>Foto da Avaria</label>
+            <button type="button" style="background:#cbd5e0; margin-top:5px;" onclick="triggerCamera('input-avaria-${avariasCount}')">📷 Tirar Foto</button>
+            <input type="file" id="input-avaria-${avariasCount}" accept="image/*" capture="environment" onchange="previewAvariaPhoto(this, ${avariasCount})">
+            <span id="label-avaria-foto-${avariasCount}" style="display:block; font-size:0.8rem; color:#718096; margin-top:4px;">Nenhuma foto tirada</span>
+        `;
+        container.appendChild(div);
+
+        if (avariasCount >= 5) {
+            document.getElementById('btn-add-avaria').style.display = 'none';
+        }
+    }
+
+    function previewAvariaPhoto(input, index) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                photosData[`avaria_${index}`] = e.target.result;
+                document.getElementById(`label-avaria-foto-${index}`).innerText = "✅ Foto Anexada";
+                document.getElementById(`label-avaria-foto-${index}`).style.color = "#38a169";
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    /* ENVIO DOS DADOS PARA O APPS SCRIPT */
+    async function enviarCadastro() {
+        const loading = document.getElementById('loading');
+        const btnSubmit = document.getElementById('btn-final-submit');
+        
+        loading.style.display = 'block';
+        btnSubmit.disabled = true;
+
+        // Coleta avarias
+        let listaAvariasTxt = [];
+        if (possuiAvarias) {
+            const descs = document.querySelectorAll('.desc-avaria');
+            descs.forEach((el, i) => {
+                if (el.value) {
+                    listaAvariasTxt.push(`Avaria ${i+1}: ${el.value}`);
+                }
+            });
+        }
+
+        const payload = {
+            motorista: document.getElementById('motorista').value,
+            cpf: document.getElementById('cpf').value,
+            placa: document.getElementById('placa').value,
+            modelo: document.getElementById('modelo').value,
+            cor: document.getElementById('cor').value,
+            fotoDianteira: photosData['input-dianteira'] || '',
+            fotoTraseira: photosData['input-traseira'] || '',
+            fotoLatEsq: photosData['input-lat-esq'] || '',
+            fotoLatDir: photosData['input-lat-dir'] || '',
+            possuiAvarias: possuiAvarias ? "SIM" : "NÃO",
+            descricaoAvarias: listaAvariasTxt.join(' | '),
+            fotoAvaria1: photosData['avaria_1'] || '',
+            fotoAvaria2: photosData['avaria_2'] || '',
+            fotoAvaria3: photosData['avaria_3'] || '',
+            fotoAvaria4: photosData['avaria_4'] || '',
+            fotoAvaria5: photosData['avaria_5'] || ''
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert("✅ Vistoria cadastrada com sucesso!");
+                window.location.reload();
+            } else {
+                alert("Erro ao salvar: " + result.message);
+            }
+        } catch (err) {
+            alert("Erro de conexão: " + err.message);
+        } finally {
+            loading.style.display = 'none';
+            btnSubmit.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>
