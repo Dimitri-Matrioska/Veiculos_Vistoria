@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist de Veículo - Canteiro</title>
+    <title>Checklist de Veículo - Teste 1 Foto</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; padding: 16px; color: #333; margin: 0; }
@@ -11,21 +11,18 @@
         h1 { font-size: 1.4rem; text-align: center; margin-bottom: 24px; color: #1a202c; }
         label { display: block; margin: 16px 0 8px; font-weight: 600; font-size: 0.95rem; }
         input, select { width: 100%; padding: 16px; border: 1px solid #cbd5e0; border-radius: 10px; font-size: 16px; margin-bottom: 8px; background: #fff; }
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-        .photo-box { background: #edf2f7; border: 2px dashed #cbd5e0; padding: 12px 10px; text-align: center; border-radius: 10px; color: #718096; font-size: 0.85rem; font-weight: 600; position: relative; }
+        .photo-box { background: #edf2f7; border: 2px dashed #cbd5e0; padding: 20px; text-align: center; border-radius: 10px; color: #718096; font-size: 0.95rem; font-weight: 600; position: relative; margin: 20px 0; }
         .photo-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .toggle-group { display: flex; gap: 12px; margin-top: 8px; }
-        .toggle-btn { flex: 1; padding: 14px; text-align: center; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; font-weight: 600; color: #4a5568; }
-        .toggle-btn.active-sim { background: #feb2b2; border-color: #f56565; color: #742a2a; }
-        .toggle-btn.active-nao { background: #c6f6d5; border-color: #48bb78; color: #22543d; }
-        #dano-section { display: none; margin-top: 20px; padding: 16px; background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px; }
-        button[type="submit"] { width: 100%; padding: 18px; background: #2b6cb0; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; margin-top: 24px; cursor: pointer; }
+        button[type="submit"] { width: 100%; padding: 18px; background: #2b6cb0; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; margin-top: 16px; cursor: pointer; }
         button:disabled { background: #a0aec0; }
+        #status-msg { margin-top: 16px; padding: 12px; border-radius: 8px; display: none; text-align: center; font-weight: 600; }
+        .success { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
+        .error { background: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Entrada de Veículo</h1>
+        <h1>Entrada de Veículo 2 (Teste 1 Foto)</h1>
         <form id="vehicleForm">
             <label>Nome do Motorista</label>
             <input type="text" id="motorista" required placeholder="Nome completo">
@@ -45,43 +42,32 @@
                 <option>Branco</option><option>Prata</option><option>Preto</option><option>Cinza</option><option>Vermelho</option>
             </select>
 
-            <label>Fotos de Registro (Checklist)</label>
-            <div class="photo-grid">
-                <div class="photo-box" id="label-dianteira">📸 Dianteira<input type="file" accept="image/*" capture="environment" id="fotoDianteira" required></div>
-                <div class="photo-box" id="label-traseira">📸 Traseira<input type="file" accept="image/*" capture="environment" id="fotoTraseira" required></div>
-                <div class="photo-box" id="label-latEsq">📸 Lateral Esq.<input type="file" accept="image/*" capture="environment" id="fotoLatEsq" required></div>
-                <div class="photo-box" id="label-latDir">📸 Lateral Dir.<input type="file" accept="image/*" capture="environment" id="fotoLatDir" required></div>
-            </div>
-
-            <label>O veículo possui algum dano?</label>
-            <div class="toggle-group">
-                <div id="btn-nao" class="toggle-btn active-nao" onclick="toggleDano(false)">Não</div>
-                <div id="btn-sim" class="toggle-btn" onclick="toggleDano(true)">Sim</div>
-            </div>
-
-            <div id="dano-section">
-                <label>Foto do Dano</label>
-                <input type="file" id="fotoDano" accept="image/*" capture="environment">
-                <label>Descrição do Dano</label>
-                <input type="text" id="descricaoDano" placeholder="Ex: Arranhão no para-choque">
+            <label>Foto de Registro (Dianteira)</label>
+            <div class="photo-box" id="label-dianteira">
+                <span id="photo-status">📸 Tirar/Selecionar Foto</span>
+                <input type="file" accept="image/*" capture="environment" id="fotoDianteira" required>
             </div>
 
             <button type="submit" id="btnSubmit">Registrar Entrada</button>
         </form>
+
+        <div id="status-msg"></div>
     </div>
 
     <script>
-        const API_URL = "COLE_AQUI_A_URL_DO_GOOGLE_APPS_SCRIPT";
-        let temDanoStatus = false;
+        // COLE SUA URL DA IMPLANTAÇÃO DO GOOGLE APPS SCRIPT ABAIXO
+        const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
 
-        function toggleDano(hasDamage) {
-            temDanoStatus = hasDamage;
-            document.getElementById('dano-section').style.display = hasDamage ? 'block' : 'none';
-            document.getElementById('btn-sim').className = `toggle-btn ${hasDamage ? 'active-sim' : ''}`;
-            document.getElementById('btn-nao').className = `toggle-btn ${!hasDamage ? 'active-nao' : ''}`;
-        }
+        document.getElementById('fotoDianteira').addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                const size = (e.target.files[0].size / (1024*1024)).toFixed(2);
+                document.getElementById('photo-status').innerText = `✓ Foto Selecionada (${size} MB)`;
+                document.getElementById('label-dianteira').style.background = "#c6f6d5";
+                document.getElementById('label-dianteira').style.borderColor = "#38a169";
+            }
+        });
 
-        const toBase64 = file => new Promise((resolve, reject) => {
+        const fileToBase64 = file => new Promise((resolve, reject) => {
             if (!file) return resolve("");
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -89,49 +75,56 @@
             reader.onerror = error => reject(error);
         });
 
-        // Atualiza a interface ao selecionar foto
-        document.querySelectorAll('input[type="file"]').forEach(input => {
-            input.addEventListener('change', (e) => {
-                if (e.target.files[0]) {
-                    e.target.parentElement.style.background = "#c6f6d5";
-                }
-            });
-        });
+        function showMessage(text, isError = false) {
+            const msgDiv = document.getElementById('status-msg');
+            msgDiv.style.display = 'block';
+            msgDiv.className = isError ? 'error' : 'success';
+            msgDiv.innerText = text;
+        }
 
         document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
             btn.disabled = true;
-            btn.innerText = "Enviando dados e fotos...";
+            btn.innerText = "Lendo foto...";
 
             try {
+                const fotoFile = document.getElementById('fotoDianteira').files[0];
+                const fotoBase64 = await fileToBase64(fotoFile);
+
+                btn.innerText = "Enviando ao Google Drive...";
+
                 const payload = {
                     motorista: document.getElementById('motorista').value,
                     cpf: document.getElementById('cpf').value,
                     placa: document.getElementById('placa').value.toUpperCase(),
                     modelo: document.getElementById('modelo').value,
                     cor: document.getElementById('cor').value,
-                    temDano: temDanoStatus,
-                    descricaoDano: document.getElementById('descricaoDano').value,
-                    fotoDianteira: await toBase64(document.getElementById('fotoDianteira').files[0]),
-                    fotoTraseira: await toBase64(document.getElementById('fotoTraseira').files[0]),
-                    fotoLatEsq: await toBase64(document.getElementById('fotoLatEsq').files[0]),
-                    fotoLatDir: await toBase64(document.getElementById('fotoLatDir').files[0]),
-                    fotoDano: await toBase64(document.getElementById('fotoDano').files[0])
+                    fotoDianteira: fotoBase64
                 };
 
-                await fetch(API_URL, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
 
-                alert("Entrada registrada com sucesso!");
-                location.reload();
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    showMessage("✓ Sucesso! Registro e foto salvos no Drive.");
+                    document.getElementById('vehicleForm').reset();
+                    document.getElementById('photo-status').innerText = "📸 Tirar/Selecionar Foto";
+                    document.getElementById('label-dianteira').style.background = "#edf2f7";
+                    document.getElementById('label-dianteira').style.borderColor = "#cbd5e0";
+                } else {
+                    showMessage("Erro no servidor Google: " + (result.message || "Erro desconhecido"), true);
+                }
+
             } catch (err) {
-                alert("Erro ao enviar registro.");
                 console.error(err);
+                showMessage("Erro de envio: " + err.message, true);
+            } finally {
                 btn.disabled = false;
                 btn.innerText = "Registrar Entrada";
             }
