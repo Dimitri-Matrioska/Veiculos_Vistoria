@@ -3,67 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>||</title>
+    <title>Painel de Controle - Vistoria de Veículos</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; padding: 20px; color: #333; margin: 0; }
-        .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1 { font-size: 1.6rem; color: #1a202c; margin-top: 0; }
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
-        button { padding: 10px 18px; background: #2b6cb0; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #2c5282; }
-        .table-responsive { overflow-x: auto; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; }
-        th { background-color: #edf2f7; color: #2d3748; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; padding: 20px; color: #1a202c; margin: 0; }
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        h1 { font-size: 1.6rem; color: #2d3748; margin: 0; }
+        button.btn-refresh { padding: 10px 18px; background: #2b6cb0; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button.btn-refresh:hover { background: #2c5282; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #edf2f7; color: #4a5568; font-weight: 700; }
         tr:hover { background-color: #f7fafc; }
-        .photo-link { color: #3182ce; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
-        .photo-link:hover { text-decoration: underline; }
-        #status-info { margin: 15px 0; padding: 12px; border-radius: 8px; font-weight: 500; }
-        .loading { background: #ebf8ff; color: #2b6cb0; }
-        .error { background: #fed7d7; color: #9b2c2c; }
-        .empty { background: #feebc8; color: #742a2a; }
+
+        .btn-detail { background: #319795; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-detail:hover { background: #234e52; }
+
+        /* MODAL DE DETALHES */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); z-index: 1000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(4px); }
+        .modal-content { background: white; width: 100%; max-width: 900px; border-radius: 16px; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
+        .close-modal { position: absolute; top: 16px; right: 20px; font-size: 28px; cursor: pointer; color: #718096; font-weight: bold; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: #f7fafc; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0; }
+        .info-item label { display: block; font-size: 0.8rem; color: #718096; text-transform: uppercase; font-weight: bold; }
+        .info-item span { font-size: 1.05rem; font-weight: 600; color: #2d3748; }
+
+        /* MAPA DO VEÍCULO E FOTOS */
+        .car-map-container { position: relative; width: 100%; min-height: 420px; background: #ffffff; border: 1px dashed #cbd5e0; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: hidden; }
+        .car-svg { width: 320px; max-width: 100%; opacity: 0.85; }
+
+        /* THUMBNAILS DAS FOTOS SOBRE/AO REDOR DO CARRO */
+        .photo-card { position: absolute; background: white; border: 2px solid #cbd5e0; border-radius: 8px; padding: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.12); width: 130px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .photo-card:hover { transform: scale(1.08); border-color: #3182ce; z-index: 10; }
+        .photo-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 4px; background: #e2e8f0; }
+        .photo-card span { display: block; font-size: 0.75rem; font-weight: bold; color: #4a5568; margin-top: 2px; }
+
+        /* POSICIONAMENTO DAS FOTOS (CONFORME O SEU ESBOÇO) */
+        .pos-dianteira { top: 20px; right: 20px; }
+        .pos-traseira { top: 20px; left: 20px; }
+        .pos-lat-esquerda { bottom: 20px; left: 20px; }
+        .pos-lat-direita { bottom: 20px; right: 20px; }
+
+        /* ZOOM / LIGHTBOX */
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .lightbox img { max-width: 90%; max-height: 90vh; border-radius: 8px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 35px; cursor: pointer; }
+
+        #status-msg { margin: 15px 0; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="controls">
-            <h1>Painel de Controle</h1>
-            <button onclick="carregarDados()">🔄 Atualizar Dados</button>
+        <div class="header-bar">
+            <h1>📋 Painel de Controle de Vistorias</h1>
+            <button class="btn-refresh" onclick="carregarDados()">🔄 Atualizar</button>
         </div>
 
-        <div id="status-info" class="loading">Carregando dados...</div>
+        <div id="status-msg">Carregando dados...</div>
 
-        <div class="table-responsive">
-            <table id="tabela-dados" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>Data/Hora</th>
-                        <th>Motorista</th>
-                        <th>CPF</th>
-                        <th>Placa</th>
-                        <th>Modelo</th>
-                        <th>Cor</th>
-                        <th>Foto Dianteira</th>
-                    </tr>
-                </thead>
-                <tbody id="corpo-tabela"></tbody>
-            </table>
+        <table id="tabela-dados" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Placa</th>
+                    <th>Motorista</th>
+                    <th>Modelo/Cor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela"></tbody>
+        </table>
+    </div>
+
+    <!-- MODAL VER DETALHES -->
+    <div class="modal-overlay" id="modalDetalhes">
+        <div class="modal-content">
+            <span class="close-modal" onclick="fecharModal()">&times;</span>
+            <h2 style="margin-top:0;">Vistoria do Veículo</h2>
+
+            <div class="info-grid">
+                <div class="info-item"><label>Placa</label><span id="det-placa">-</span></div>
+                <div class="info-item"><label>Motorista</label><span id="det-motorista">-</span></div>
+                <div class="info-item"><label>CPF</label><span id="det-cpf">-</span></div>
+                <div class="info-item"><label>Modelo / Cor</label><span id="det-modelo-cor">-</span></div>
+                <div class="info-item"><label>Data Entrada</label><span id="det-data">-</span></div>
+            </div>
+
+            <h3 style="font-size:1rem; color:#4a5568;">Inspeção Visual (Fotos do Registro)</h3>
+            
+            <div class="car-map-container">
+                <!-- SVG DO VEÍCULO (ILUSTRAÇÃO DA SILHUETA DO CARRO) -->
+                <svg class="car-svg" viewBox="0 0 500 200" fill="none" stroke="#4a5568" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M 50,130 C 50,130 70,80 140,70 C 180,60 250,55 330,65 C 380,75 420,100 450,120 C 465,126 470,140 460,150 C 450,160 430,160 430,160 L 70,160 C 70,160 50,160 50,130 Z" />
+                    <!-- Rodas -->
+                    <circle cx="120" cy="160" r="28" fill="#edf2f7" stroke="#2d3748" stroke-width="4"/>
+                    <circle cx="380" cy="160" r="28" fill="#edf2f7" stroke="#2d3748" stroke-width="4"/>
+                    <!-- Vidros -->
+                    <path d="M 150,72 L 230,70 L 230,110 L 120,110 Z" fill="#e2e8f0" stroke="#718096" stroke-width="2"/>
+                    <path d="M 245,70 L 320,68 L 350,110 L 245,110 Z" fill="#e2e8f0" stroke="#718096" stroke-width="2"/>
+                    <!-- Linhas de conexão (estilo diagrama) -->
+                    <line x1="380" y1="110" x2="430" y2="40" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="4"/>
+                </svg>
+
+                <!-- CARD DA FOTO DIANTEIRA -->
+                <div class="photo-card pos-dianteira" id="card-dianteira" onclick="abrirZoom(this)">
+                    <img id="img-dianteira" src="" alt="Dianteira">
+                    <span>Dianteira</span>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- LIGHTBOX PARA ZOOM NA FOTO -->
+    <div class="lightbox" id="lightbox" onclick="fecharZoom()">
+        <span class="lightbox-close">&times;</span>
+        <img id="img-lightbox" src="" alt="Zoom">
+    </div>
+
     <script>
-        // COLE SUA URL DA IMPLANTAÇÃO DO GOOGLE APPS SCRIPT ABAIXO
         const API_URL = "https://script.google.com/macros/s/AKfycbyqvnIpHxNR2njqrkKvyT5qVXyrYncnRrNzPUCJ_3cANn7PO8h93qIPY-gxMAWpK9-vDA/exec";
+        let dadosVistorias = [];
+
+        // Converte o link padrão do Google Drive para o link direto de Imagem Rápida
+        function converterUrlDrive(url) {
+            if (!url) return '';
+            const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            }
+            return url;
+        }
 
         async function carregarDados() {
-            const statusDiv = document.getElementById('status-info');
+            const statusMsg = document.getElementById('status-msg');
             const tabela = document.getElementById('tabela-dados');
             const tbody = document.getElementById('corpo-tabela');
 
-            statusDiv.style.display = 'block';
-            statusDiv.className = 'loading';
-            statusDiv.innerText = 'Carregando dados...';
+            statusMsg.style.display = 'block';
+            statusMsg.innerText = 'Carregando dados da planilha...';
             tabela.style.display = 'none';
             tbody.innerHTML = '';
 
@@ -71,48 +151,73 @@
                 const response = await fetch(API_URL);
                 const result = await response.json();
 
-                if (result.status === "success") {
-                    const rows = result.data;
-
-                    if (!rows || rows.length <= 1) {
-                        statusDiv.className = 'empty';
-                        statusDiv.innerText = 'Nenhum registro encontrado na planilha.';
-                        return;
-                    }
-
-                    statusDiv.style.display = 'none';
+                if (result.status === "success" && result.data.length > 1) {
+                    dadosVistorias = result.data.slice(1); // Remove o cabeçalho
+                    statusMsg.style.display = 'none';
                     tabela.style.display = 'table';
 
-                    // Ignora o cabeçalho (linha 0) e itera pelas demais linhas
-                    for (let i = 1; i < rows.length; i++) {
-                        const row = rows[i];
+                    dadosVistorias.forEach((row, index) => {
                         const tr = document.createElement('tr');
-
-                        const dataFormatada = row[0] ? new Date(row[0]).toLocaleString('pt-BR') : '-';
-                        const fotoHtml = row[6] ? `<a href="${row[6]}" target="_blank" class="photo-link">📷 Ver Foto</a>` : 'Sem foto';
+                        const dataFmt = row[0] ? new Date(row[0]).toLocaleString('pt-BR') : '-';
 
                         tr.innerHTML = `
-                            <td>${dataFormatada}</td>
+                            <td>${dataFmt}</td>
+                            <td><strong>${row[3] || '-'}</strong></td>
                             <td>${row[1] || '-'}</td>
-                            <td>${row[2] || '-'}</td>
-                            <td>${row[3] || '-'}</td>
-                            <td>${row[4] || '-'}</td>
-                            <td>${row[5] || '-'}</td>
-                            <td>${fotoHtml}</td>
+                            <td>${row[4] || '-'} / ${row[5] || '-'}</td>
+                            <td>
+                                <button class="btn-detail" onclick="abrirDetalhes(${index})">🔍 Ver Detalhes</button>
+                            </td>
                         `;
                         tbody.appendChild(tr);
-                    }
+                    });
                 } else {
-                    throw new Error(result.message || "Erro retornado do servidor");
+                    statusMsg.innerText = 'Nenhum registro encontrado.';
                 }
             } catch (err) {
-                console.error(err);
-                statusDiv.className = 'error';
-                statusDiv.innerText = 'Erro ao carregar dados: ' + err.message;
+                statusMsg.innerText = 'Erro ao carregar dados: ' + err.message;
             }
         }
 
-        // Carrega os dados automaticamente ao abrir a página
+        function abrirDetalhes(index) {
+            const item = dadosVistorias[index];
+            
+            document.getElementById('det-data').innerText = item[0] ? new Date(item[0]).toLocaleString('pt-BR') : '-';
+            document.getElementById('det-motorista').innerText = item[1] || '-';
+            document.getElementById('det-cpf').innerText = item[2] || '-';
+            document.getElementById('det-placa').innerText = item[3] || '-';
+            document.getElementById('det-modelo-cor').innerText = `${item[4] || '-'} / ${item[5] || '-'}`;
+
+            // Imagem Direta Rápida
+            const urlFotoDirect = converterUrlDrive(item[6]);
+            const imgDianteira = document.getElementById('img-dianteira');
+            
+            if (urlFotoDirect) {
+                imgDianteira.src = urlFotoDirect;
+                document.getElementById('card-dianteira').style.display = 'block';
+            } else {
+                document.getElementById('card-dianteira').style.display = 'none';
+            }
+
+            document.getElementById('modalDetalhes').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalDetalhes').style.display = 'none';
+        }
+
+        function abrirZoom(card) {
+            const img = card.querySelector('img');
+            if (img && img.src) {
+                document.getElementById('img-lightbox').src = img.src;
+                document.getElementById('lightbox').style.display = 'flex';
+            }
+        }
+
+        function fecharZoom() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
         carregarDados();
     </script>
 </body>
