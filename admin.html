@@ -216,6 +216,7 @@
             width: 100%;
             max-width: 260px;
             height: auto;
+            object-fit: contain;
         }
 
         .thumb-box {
@@ -403,8 +404,7 @@
                     <img id="imgLatEsq" src="" onclick="abrirZoom(this.src)">
                 </div>
 
-                <!-- CARRO CENTRAL -->
-              <!-- CARRO CENTRAL -->
+                <!-- IMAGEM CENTRAL DO CARRO LOCAL -->
                 <img src="CARRO.png" alt="Desenho do Veículo" class="carro-imagem-central" onerror="this.src='Imagens_Logos/CARRO.png'">
 
                 <div class="thumb-box" style="grid-column: 3; grid-row: 1;">
@@ -549,7 +549,6 @@
                 const containerFotos = document.getElementById("fotosAvariasContainer");
                 containerFotos.innerHTML = "";
 
-                // Percorre fotos de avaria das colunas N a R (índices 13 a 17)
                 for (let i = 13; i <= 17; i++) {
                     if (item[i] && item[i].startsWith("http")) {
                         const img = document.createElement("img");
