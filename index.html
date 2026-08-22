@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Veículo - Canteiro</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f6; padding: 16px; color: #333; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { font-size: 1.4rem; text-align: center; margin-bottom: 24px; color: #1a202c; }
+        label { display: block; margin: 16px 0 8px; font-weight: 600; font-size: 0.95rem; }
+        input, select { width: 100%; padding: 16px; border: 1px solid #cbd5e0; border-radius: 10px; font-size: 16px; margin-bottom: 8px; background: #fff; }
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .photo-box { background: #edf2f7; border: 2px dashed #cbd5e0; padding: 12px 10px; text-align: center; border-radius: 10px; color: #718096; font-size: 0.85rem; font-weight: 600; position: relative; }
+        .photo-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .toggle-group { display: flex; gap: 12px; margin-top: 8px; }
+        .toggle-btn { flex: 1; padding: 14px; text-align: center; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; font-weight: 600; color: #4a5568; }
+        .toggle-btn.active-sim { background: #feb2b2; border-color: #f56565; color: #742a2a; }
+        .toggle-btn.active-nao { background: #c6f6d5; border-color: #48bb78; color: #22543d; }
+        #dano-section { display: none; margin-top: 20px; padding: 16px; background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px; }
+        button[type="submit"] { width: 100%; padding: 18px; background: #2b6cb0; color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; margin-top: 24px; cursor: pointer; }
+        button:disabled { background: #a0aec0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Entrada de Veículo</h1>
+        <form id="vehicleForm">
+            <label>Nome do Motorista</label>
+            <input type="text" id="motorista" required placeholder="Nome completo">
+            
+            <label>CPF</label>
+            <input type="tel" id="cpf" required placeholder="000.000.000-00">
+            
+            <label>Placa</label>
+            <input type="text" id="placa" required placeholder="ABC1234" style="text-transform: uppercase;">
+            
+            <label>Modelo</label>
+            <input type="text" id="modelo" required placeholder="Ex: Fiat Strada">
+            
+            <label>Cor</label>
+            <select id="cor" required>
+                <option value="">Selecione uma cor</option>
+                <option>Branco</option><option>Prata</option><option>Preto</option><option>Cinza</option><option>Vermelho</option>
+            </select>
+
+            <label>Fotos de Registro (Checklist)</label>
+            <div class="photo-grid">
+                <div class="photo-box" id="label-dianteira">📸 Dianteira<input type="file" accept="image/*" capture="environment" id="fotoDianteira" required></div>
+                <div class="photo-box" id="label-traseira">📸 Traseira<input type="file" accept="image/*" capture="environment" id="fotoTraseira" required></div>
+                <div class="photo-box" id="label-latEsq">📸 Lateral Esq.<input type="file" accept="image/*" capture="environment" id="fotoLatEsq" required></div>
+                <div class="photo-box" id="label-latDir">📸 Lateral Dir.<input type="file" accept="image/*" capture="environment" id="fotoLatDir" required></div>
+            </div>
+
+            <label>O veículo possui algum dano?</label>
+            <div class="toggle-group">
+                <div id="btn-nao" class="toggle-btn active-nao" onclick="toggleDano(false)">Não</div>
+                <div id="btn-sim" class="toggle-btn" onclick="toggleDano(true)">Sim</div>
+            </div>
+
+            <div id="dano-section">
+                <label>Foto do Dano</label>
+                <input type="file" id="fotoDano" accept="image/*" capture="environment">
+                <label>Descrição do Dano</label>
+                <input type="text" id="descricaoDano" placeholder="Ex: Arranhão no para-choque">
+            </div>
+
+            <button type="submit" id="btnSubmit">Registrar Entrada</button>
+        </form>
+    </div>
+
+    <script>
+        const API_URL = "COLE_AQUI_A_URL_DO_GOOGLE_APPS_SCRIPT";
+        let temDanoStatus = false;
+
+        function toggleDano(hasDamage) {
+            temDanoStatus = hasDamage;
+            document.getElementById('dano-section').style.display = hasDamage ? 'block' : 'none';
+            document.getElementById('btn-sim').className = `toggle-btn ${hasDamage ? 'active-sim' : ''}`;
+            document.getElementById('btn-nao').className = `toggle-btn ${!hasDamage ? 'active-nao' : ''}`;
+        }
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            if (!file) return resolve("");
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        // Atualiza a interface ao selecionar foto
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    e.target.parentElement.style.background = "#c6f6d5";
+                }
+            });
+        });
+
+        document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerText = "Enviando dados e fotos...";
+
+            try {
+                const payload = {
+                    motorista: document.getElementById('motorista').value,
+                    cpf: document.getElementById('cpf').value,
+                    placa: document.getElementById('placa').value.toUpperCase(),
+                    modelo: document.getElementById('modelo').value,
+                    cor: document.getElementById('cor').value,
+                    temDano: temDanoStatus,
+                    descricaoDano: document.getElementById('descricaoDano').value,
+                    fotoDianteira: await toBase64(document.getElementById('fotoDianteira').files[0]),
+                    fotoTraseira: await toBase64(document.getElementById('fotoTraseira').files[0]),
+                    fotoLatEsq: await toBase64(document.getElementById('fotoLatEsq').files[0]),
+                    fotoLatDir: await toBase64(document.getElementById('fotoLatDir').files[0]),
+                    fotoDano: await toBase64(document.getElementById('fotoDano').files[0])
+                };
+
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert("Entrada registrada com sucesso!");
+                location.reload();
+            } catch (err) {
+                alert("Erro ao enviar registro.");
+                console.error(err);
+                btn.disabled = false;
+                btn.innerText = "Registrar Entrada";
+            }
+        });
+    </script>
+</body>
+</html>
