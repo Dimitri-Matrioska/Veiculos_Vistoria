@@ -399,6 +399,83 @@
         }
 
         /* =====================================================
+           MODAL DE UPLOAD (barra de progresso + gif)
+        ===================================================== */
+
+        .modal-upload-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(1, 30, 56, 0.72);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-upload-overlay.ativo {
+            display: flex;
+        }
+
+        .modal-upload-box {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            padding: 26px 22px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-upload-gif {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin: 0 auto 14px;
+            display: block;
+        }
+
+        .modal-upload-titulo {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--azul-escuro);
+            margin-bottom: 4px;
+        }
+
+        .modal-upload-status {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .barra-progresso-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--off-white);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--cinza-borda);
+        }
+
+        .barra-progresso-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--azul);
+            border-radius: 6px;
+            transition: width 0.2s ease;
+        }
+
+        .barra-progresso-texto {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--azul);
+        }
+
+        /* =====================================================
            RODAPÉ
         ===================================================== */
 
@@ -1053,6 +1130,40 @@
 
 
     <!-- =====================================================
+         MODAL DE UPLOAD
+    ===================================================== -->
+
+    <div class="modal-upload-overlay" id="modalUpload">
+
+        <div class="modal-upload-box">
+
+            <img
+                src="Imagens_Logos/Logo_animada2.gif"
+                alt="Enviando..."
+                class="modal-upload-gif">
+
+            <div class="modal-upload-titulo">
+                Enviando Vistoria
+            </div>
+
+            <div class="modal-upload-status" id="modalUploadStatus">
+                Otimizando fotos...
+            </div>
+
+            <div class="barra-progresso-container">
+                <div class="barra-progresso-fill" id="barraProgressoFill"></div>
+            </div>
+
+            <div class="barra-progresso-texto" id="barraProgressoTexto">
+                0%
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
          JAVASCRIPT
     ===================================================== -->
 
@@ -1187,7 +1298,114 @@
 
 
         /* =====================================================
-           COMPRIMIR / REDIMENSIONAR IMAGEM ANTES DO ENVIO
+           MODAL DE UPLOAD
+        ===================================================== */
+
+        function abrirModalUpload() {
+
+            document
+                .getElementById("modalUpload")
+                .classList.add("ativo");
+
+            atualizarProgresso(0, "Otimizando fotos...");
+
+        }
+
+        function fecharModalUpload() {
+
+            document
+                .getElementById("modalUpload")
+                .classList.remove("ativo");
+
+        }
+
+        function atualizarProgresso(percentual, texto) {
+
+            document
+                .getElementById("barraProgressoFill")
+                .style.width = `${percentual}%`;
+
+            document
+                .getElementById("barraProgressoTexto")
+                .innerText = `${Math.round(percentual)}%`;
+
+            if (texto) {
+
+                document
+                    .getElementById("modalUploadStatus")
+                    .innerText = texto;
+
+            }
+
+        }
+
+        /* =====================================================
+           ENVIAR PAYLOAD VIA XHR (permite progresso real)
+        ===================================================== */
+
+        function enviarComProgresso(url, payload) {
+
+            return new Promise((resolve, reject) => {
+
+                const xhr = new XMLHttpRequest();
+
+                xhr.open("POST", url, true);
+
+
+                xhr.upload.onprogress = function(evento) {
+
+                    if (evento.lengthComputable) {
+
+                        const percentual =
+                            (evento.loaded / evento.total) * 100;
+
+                        atualizarProgresso(
+                            percentual,
+                            "Enviando Vistoria..."
+                        );
+
+                    }
+
+                };
+
+
+                xhr.onload = function() {
+
+                    if (xhr.status >= 200 && xhr.status < 300) {
+
+                        try {
+
+                            resolve(JSON.parse(xhr.responseText));
+
+                        } catch (err) {
+
+                            reject(err);
+
+                        }
+
+                    } else {
+
+                        reject(
+                            new Error(`Erro HTTP ${xhr.status}`)
+                        );
+
+                    }
+
+                };
+
+
+                xhr.onerror = function() {
+
+                    reject(new Error("Erro de conexão"));
+
+                };
+
+
+                xhr.send(JSON.stringify(payload));
+
+            });
+
+        }
            Reduz a foto (que pode vir com 3-5MB da câmera) para
            no máximo ~1280px de largura/altura e converte para
            JPEG com qualidade 0.7, o que costuma gerar arquivos
@@ -1285,7 +1503,9 @@
                 btn.disabled = true;
 
                 btn.innerText =
-                    "Otimizando fotos...";
+                    "Enviando...";
+
+                abrirModalUpload();
 
 
                 try {
@@ -1332,8 +1552,7 @@
                     ]);
 
 
-                    btn.innerText =
-                        "Enviando Vistoria...";
+                    atualizarProgresso(0, "Enviando Vistoria...");
 
 
                     const payload = {
@@ -1385,22 +1604,13 @@
                     };
 
 
-                    const response =
-                        await fetch(API_URL, {
-
-                            method: "POST",
-
-                            body:
-                                JSON.stringify(payload)
-
-                        });
-
-
                     const result =
-                        await response.json();
+                        await enviarComProgresso(API_URL, payload);
 
 
                     if (result.status === "success") {
+
+                        atualizarProgresso(100, "Concluído!");
 
                         alert(
                             "Vistoria salva com sucesso!"
@@ -1428,6 +1638,8 @@
 
 
                 } finally {
+
+                    fecharModalUpload();
 
                     btn.disabled = false;
 
