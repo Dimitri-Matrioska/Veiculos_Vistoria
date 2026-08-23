@@ -217,35 +217,36 @@
         }
 
         /* =====================================================
-           ÁREA DAS FOTOS
+           ÁREA DAS FOTOS — LAYOUT EM CRUZ
+           dianteira em cima / traseira embaixo / laterais nos lados
+           carro grande e centralizado
         ===================================================== */
 
         .diagrama-carro-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 62px 1fr 62px;
             grid-template-rows: auto auto auto;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
-            justify-items: center;
+            justify-items: stretch;
             margin: 15px 0;
         }
 
         .carro-imagem-central {
-            grid-column: 1 / span 2;
-            grid-row: 1;
+            grid-column: 2;
+            grid-row: 2;
             width: 100%;
-            max-width: 210px;
-            max-height: 130px;
+            max-width: 260px;
+            max-height: 190px;
             object-fit: contain;
-            margin-bottom: 2px;
+            justify-self: center;
         }
 
         .foto-slot {
-            width: 100%;
-            min-height: 115px;
+            min-height: 64px;
             border: 2px dashed var(--cinza-borda);
-            border-radius: 9px;
-            padding: 10px;
+            border-radius: 8px;
+            padding: 4px;
             text-align: center;
             background-color: var(--off-white);
             cursor: pointer;
@@ -253,6 +254,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+        }
+
+        .foto-slot.tem-foto {
+            border-style: solid;
+            border-color: var(--azul);
         }
 
         .foto-slot:active {
@@ -268,32 +275,58 @@
         .foto-slot label {
             width: 100%;
             height: 100%;
-            min-height: 90px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 9px;
             font-weight: 700;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            gap: 3px;
+            line-height: 1.15;
         }
 
         .icone-camera {
-            font-size: 26px;
+            font-size: 15px;
         }
 
         .texto-camera {
             color: var(--azul-escuro);
         }
 
-        .preview-img {
-            width: 100%;
-            max-height: 105px;
-            object-fit: cover;
-            border-radius: 6px;
+        /* Quando já existe foto: ícone some, mostra miniatura pequena */
+        .foto-slot.tem-foto .icone-camera {
             display: none;
-            margin-top: 5px;
+        }
+
+        .preview-img {
+            width: 30px;
+            height: 30px;
+            object-fit: cover;
+            border-radius: 5px;
+            display: none;
+            border: 1px solid var(--cinza-borda);
+        }
+
+        /* Posições no grid (mesmas no mobile e desktop) */
+        .foto-dianteira {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .foto-traseira {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .foto-lateral-esquerda {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .foto-lateral-direita {
+            grid-column: 3;
+            grid-row: 2;
         }
 
         /* =====================================================
@@ -307,13 +340,12 @@
         }
 
         .foto-avaria {
-            min-height: 90px;
+            min-height: 70px;
             padding: 5px;
         }
 
         .foto-avaria label {
-            min-height: 75px;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         /* =====================================================
@@ -420,36 +452,30 @@
             }
 
             .diagrama-carro-container {
-                grid-template-columns: 1fr 2fr 1fr;
-                grid-template-rows: auto auto;
+                grid-template-columns: 100px 1fr 100px;
                 gap: 15px;
             }
 
             .carro-imagem-central {
-                grid-column: 2;
-                grid-row: 1 / span 2;
-                max-width: 280px;
-                max-height: none;
+                max-width: 340px;
+                max-height: 240px;
             }
 
-            .foto-dianteira {
-                grid-column: 1;
-                grid-row: 1;
+            .foto-slot {
+                min-height: 80px;
             }
 
-            .foto-lateral-esquerda {
-                grid-column: 1;
-                grid-row: 2;
+            .foto-slot label {
+                font-size: 11px;
             }
 
-            .foto-traseira {
-                grid-column: 3;
-                grid-row: 1;
+            .icone-camera {
+                font-size: 18px;
             }
 
-            .foto-lateral-direita {
-                grid-column: 3;
-                grid-row: 2;
+            .preview-img {
+                width: 38px;
+                height: 38px;
             }
 
             .passo-item {
@@ -657,7 +683,7 @@
 
                         <!-- DIANTEIRA -->
 
-                        <div class="foto-slot foto-dianteira">
+                        <div class="foto-slot foto-dianteira" id="slot-dianteira">
 
                             <label for="fotoDianteira">
 
@@ -665,14 +691,14 @@
                                     📷
                                 </span>
 
-                                <span class="texto-camera">
-                                    Dianteira
-                                </span>
-
                                 <img
                                     id="prev-dianteira"
                                     class="preview-img"
                                     alt="Foto dianteira">
+
+                                <span class="texto-camera">
+                                    Dianteira
+                                </span>
 
                             </label>
 
@@ -681,14 +707,14 @@
                                 id="fotoDianteira"
                                 accept="image/*"
                                 capture="environment"
-                                onchange="previewImagem(this, 'prev-dianteira')">
+                                onchange="previewImagem(this, 'prev-dianteira', 'slot-dianteira')">
 
                         </div>
 
 
                         <!-- LATERAL ESQUERDA -->
 
-                        <div class="foto-slot foto-lateral-esquerda">
+                        <div class="foto-slot foto-lateral-esquerda" id="slot-latesq">
 
                             <label for="fotoLatEsq">
 
@@ -696,14 +722,14 @@
                                     📷
                                 </span>
 
-                                <span class="texto-camera">
-                                    Lateral Esquerda
-                                </span>
-
                                 <img
                                     id="prev-latesq"
                                     class="preview-img"
                                     alt="Foto lateral esquerda">
+
+                                <span class="texto-camera">
+                                    Esq.
+                                </span>
 
                             </label>
 
@@ -712,14 +738,14 @@
                                 id="fotoLatEsq"
                                 accept="image/*"
                                 capture="environment"
-                                onchange="previewImagem(this, 'prev-latesq')">
+                                onchange="previewImagem(this, 'prev-latesq', 'slot-latesq')">
 
                         </div>
 
 
                         <!-- TRASEIRA -->
 
-                        <div class="foto-slot foto-traseira">
+                        <div class="foto-slot foto-traseira" id="slot-traseira">
 
                             <label for="fotoTraseira">
 
@@ -727,14 +753,14 @@
                                     📷
                                 </span>
 
-                                <span class="texto-camera">
-                                    Traseira
-                                </span>
-
                                 <img
                                     id="prev-traseira"
                                     class="preview-img"
                                     alt="Foto traseira">
+
+                                <span class="texto-camera">
+                                    Traseira
+                                </span>
 
                             </label>
 
@@ -743,14 +769,14 @@
                                 id="fotoTraseira"
                                 accept="image/*"
                                 capture="environment"
-                                onchange="previewImagem(this, 'prev-traseira')">
+                                onchange="previewImagem(this, 'prev-traseira', 'slot-traseira')">
 
                         </div>
 
 
                         <!-- LATERAL DIREITA -->
 
-                        <div class="foto-slot foto-lateral-direita">
+                        <div class="foto-slot foto-lateral-direita" id="slot-latdir">
 
                             <label for="fotoLatDir">
 
@@ -758,14 +784,14 @@
                                     📷
                                 </span>
 
-                                <span class="texto-camera">
-                                    Lateral Direita
-                                </span>
-
                                 <img
                                     id="prev-latdir"
                                     class="preview-img"
                                     alt="Foto lateral direita">
+
+                                <span class="texto-camera">
+                                    Dir.
+                                </span>
 
                             </label>
 
@@ -774,7 +800,7 @@
                                 id="fotoLatDir"
                                 accept="image/*"
                                 capture="environment"
-                                onchange="previewImagem(this, 'prev-latdir')">
+                                onchange="previewImagem(this, 'prev-latdir', 'slot-latdir')">
 
                         </div>
 
@@ -878,13 +904,18 @@
 
                             <!-- AVARIA 1 -->
 
-                            <div class="foto-slot foto-avaria">
+                            <div class="foto-slot foto-avaria" id="slot-avaria1">
 
                                 <label for="fotoAvaria1">
 
                                     <span class="icone-camera">
                                         📷
                                     </span>
+
+                                    <img
+                                        id="prev-avaria1"
+                                        class="preview-img"
+                                        alt="Foto avaria 1">
 
                                     <span>
                                         Avaria 1
@@ -896,20 +927,26 @@
                                     type="file"
                                     id="fotoAvaria1"
                                     accept="image/*"
-                                    capture="environment">
+                                    capture="environment"
+                                    onchange="previewImagem(this, 'prev-avaria1', 'slot-avaria1')">
 
                             </div>
 
 
                             <!-- AVARIA 2 -->
 
-                            <div class="foto-slot foto-avaria">
+                            <div class="foto-slot foto-avaria" id="slot-avaria2">
 
                                 <label for="fotoAvaria2">
 
                                     <span class="icone-camera">
                                         📷
                                     </span>
+
+                                    <img
+                                        id="prev-avaria2"
+                                        class="preview-img"
+                                        alt="Foto avaria 2">
 
                                     <span>
                                         Avaria 2
@@ -921,20 +958,26 @@
                                     type="file"
                                     id="fotoAvaria2"
                                     accept="image/*"
-                                    capture="environment">
+                                    capture="environment"
+                                    onchange="previewImagem(this, 'prev-avaria2', 'slot-avaria2')">
 
                             </div>
 
 
                             <!-- AVARIA 3 -->
 
-                            <div class="foto-slot foto-avaria">
+                            <div class="foto-slot foto-avaria" id="slot-avaria3">
 
                                 <label for="fotoAvaria3">
 
                                     <span class="icone-camera">
                                         📷
                                     </span>
+
+                                    <img
+                                        id="prev-avaria3"
+                                        class="preview-img"
+                                        alt="Foto avaria 3">
 
                                     <span>
                                         Avaria 3
@@ -946,7 +989,8 @@
                                     type="file"
                                     id="fotoAvaria3"
                                     accept="image/*"
-                                    capture="environment">
+                                    capture="environment"
+                                    onchange="previewImagem(this, 'prev-avaria3', 'slot-avaria3')">
 
                             </div>
 
@@ -1092,7 +1136,7 @@
            PREVIEW DAS IMAGENS
         ===================================================== */
 
-        function previewImagem(input, idPreview) {
+        function previewImagem(input, idPreview, idSlot) {
 
             if (input.files && input.files[0]) {
 
@@ -1106,6 +1150,15 @@
                     img.src = e.target.result;
 
                     img.style.display = "block";
+
+
+                    if (idSlot) {
+
+                        document
+                            .getElementById(idSlot)
+                            .classList.add("tem-foto");
+
+                    }
 
                 };
 
