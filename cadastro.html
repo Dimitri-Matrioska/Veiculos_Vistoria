@@ -59,7 +59,7 @@
         }
 
         .logo-box img {
-            height: 30px;
+            height: 20px;
             max-width: 100%;
             width: auto;
             object-fit: contain;
@@ -1190,30 +1190,96 @@
            CONVERTER FILE PARA BASE64
         ===================================================== */
 
-        function toBase64(file) {
+        async function comprimirImagem(file, qualidade = 0.82, larguraMaxima = 1920) {
+
+            if (!file) {
+                return "";
+            }
 
             return new Promise((resolve, reject) => {
 
-                if (!file) {
-
-                    resolve("");
-
-                    return;
-
-                }
-
                 const reader = new FileReader();
 
+                reader.onload = function(event) {
+
+                    const img = new Image();
+
+                    img.onload = function() {
+
+                        let largura = img.width;
+                        let altura = img.height;
+
+                        // Reduz a imagem somente se ela for maior que 1920 px
+                        if (largura > larguraMaxima) {
+
+                            const proporcao = larguraMaxima / largura;
+
+                            largura = larguraMaxima;
+                            altura = Math.round(altura * proporcao);
+                        }
+
+                        const canvas = document.createElement("canvas");
+
+                        canvas.width = largura;
+                        canvas.height = altura;
+
+                        const ctx = canvas.getContext("2d");
+
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = "high";
+
+                        ctx.drawImage(
+                            img,
+                            0,
+                            0,
+                            largura,
+                            altura
+                        );
+
+                        // Converte para JPEG comprimido
+                        canvas.toBlob(
+                            function(blob) {
+
+                                if (!blob) {
+                                    reject(
+                                        new Error("Erro ao comprimir imagem.")
+                                    );
+                                    return;
+                                }
+
+                                const readerFinal = new FileReader();
+
+                                readerFinal.onload = function() {
+                                    resolve(readerFinal.result);
+                                };
+
+                                readerFinal.onerror = reject;
+
+                                readerFinal.readAsDataURL(blob);
+
+                            },
+                            "image/jpeg",
+                            qualidade
+                        );
+                    };
+
+                    img.onerror = function() {
+                        reject(
+                            new Error("Não foi possível carregar a imagem.")
+                        );
+                    };
+
+                    img.src = event.target.result;
+                };
+
+                reader.onerror = function() {
+                    reject(
+                        new Error("Erro ao ler a imagem.")
+                    );
+                };
+
                 reader.readAsDataURL(file);
-
-                reader.onload = () =>
-                    resolve(reader.result);
-
-                reader.onerror = error =>
-                    reject(error);
-
             });
-
         }
 
 
@@ -1242,96 +1308,57 @@
 
                     const payload = {
 
-                        usuarioResponsavel:
-                            usuarioSessao.nome,
+                    usuarioResponsavel: usuarioSessao.nome,
 
-                        motorista:
-                            document.getElementById("motorista").value,
+                    motorista: document.getElementById("motorista").value,
 
-                        cpf:
-                            document.getElementById("cpf").value,
+                    cpf: document.getElementById("cpf").value,
 
-                        placa:
-                            document
-                                .getElementById("placa")
-                                .value
-                                .toUpperCase(),
+                    placa: document
+                        .getElementById("placa")
+                        .value
+                        .toUpperCase(),
 
-                        modelo:
-                            document.getElementById("modelo").value,
+                    modelo: document.getElementById("modelo").value,
 
-                        cor:
-                            document.getElementById("cor").value,
+                    cor: document.getElementById("cor").value,
 
+                    // FOTOS PRINCIPAIS
+                    fotoDianteira: await comprimirImagem(
+                        document.getElementById("fotoDianteira").files[0]
+                    ),
 
-                        fotoDianteira:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoDianteira")
-                                    .files[0]
-                            ),
+                    fotoTraseira: await comprimirImagem(
+                        document.getElementById("fotoTraseira").files[0]
+                    ),
 
+                    fotoLatEsq: await comprimirImagem(
+                        document.getElementById("fotoLatEsq").files[0]
+                    ),
 
-                        fotoTraseira:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoTraseira")
-                                    .files[0]
-                            ),
+                    fotoLatDir: await comprimirImagem(
+                        document.getElementById("fotoLatDir").files[0]
+                    ),
 
+                    // AVARIAS
+                    possuiAvarias:
+                        document.getElementById("possuiAvarias").value,
 
-                        fotoLatEsq:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoLatEsq")
-                                    .files[0]
-                            ),
+                    descricaoAvarias:
+                        document.getElementById("descricaoAvarias").value,
 
+                    fotoAvaria1: await comprimirImagem(
+                        document.getElementById("fotoAvaria1").files[0]
+                    ),
 
-                        fotoLatDir:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoLatDir")
-                                    .files[0]
-                            ),
+                    fotoAvaria2: await comprimirImagem(
+                        document.getElementById("fotoAvaria2").files[0]
+                    ),
 
-
-                        possuiAvarias:
-                            document
-                                .getElementById("possuiAvarias")
-                                .value,
-
-
-                        descricaoAvarias:
-                            document
-                                .getElementById("descricaoAvarias")
-                                .value,
-
-
-                        fotoAvaria1:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoAvaria1")
-                                    .files[0]
-                            ),
-
-
-                        fotoAvaria2:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoAvaria2")
-                                    .files[0]
-                            ),
-
-
-                        fotoAvaria3:
-                            await toBase64(
-                                document
-                                    .getElementById("fotoAvaria3")
-                                    .files[0]
-                            )
-
-                    };
+                    fotoAvaria3: await comprimirImagem(
+                        document.getElementById("fotoAvaria3").files[0]
+                    )
+                };
 
 
                     const response =
