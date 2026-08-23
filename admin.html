@@ -30,7 +30,7 @@
 
         /* HEADER E LOGOS */
         header {
-            background-color: #FFFFFF;
+            background-color: #8d3e3e;
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
@@ -167,7 +167,7 @@
         .modal-content {
             background-color: #FFFFFF;
             border-radius: 10px;
-            max-width: 850px;
+            max-width: 1500px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -199,55 +199,91 @@
             border: none;
         }
 
-        /* CARRO E MINIATURAS */
-        .diagrama-carro-container {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 15px;
-            align-items: center;
-            justify-items: center;
-            margin: 20px 0;
-        }
+      /* DIAGRAMA DO CARRO - PAISAGEM COM ESPAÇAMENTOS AJUSTADOS */
+.diagrama-carro-container {
+    display: grid;
+    /* Colunas 1 e 3 menores (150px) aproximam Traseira e Dianteira do carro central */
+    grid-template-columns: 280px 1fr 280px;
+    /* Linhas 1 e 3 com mais altura afastam as laterais (superior/inferior) do carro */
+    grid-template-rows: 140px 220px 140px;
+    gap: 10px;
+    align-items: center;
+    justify-items: center;
+    margin: 15px 0;
+    width: 100%;
+}
 
-        .carro-imagem-central {
-            grid-column: 2;
-            grid-row: 1 / span 2;
-            width: 100%;
-            max-width: 260px;
-            height: auto;
-            object-fit: contain;
-        }
+/* CARRO CENTRAL */
+.carro-imagem-central {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    transform: rotate(90deg);
+}
 
-        .thumb-box {
-            width: 100%;
-            border: 1px solid var(--cinza-borda);
-            border-radius: 6px;
-            padding: 8px;
-            text-align: center;
-            background-color: var(--off-white);
-        }
+/* MINIATURAS */
+.thumb-box {
+    width: 100%;
+    max-width: 150px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+    background-color: var(--off-white);
+}
 
-        .thumb-box span {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
+/* AFASTAMENTO VERTICAL DAS LATERAIS */
+.thumb-box.topo {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start; /* Empurra a Lateral Esquerda para o topo */
+}
 
-        .thumb-box img {
-            width: 100%;
-            height: 75px;
-            object-fit: cover;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
 
-        .thumb-box img:hover {
-            transform: scale(1.03);
-        }
+.thumb-box.baixo {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end; /* Empurra a Lateral Direita para a base */
+}
+
+/* ITEM DA COLUNA 1 / LINHA 2 (Traseira) */
+.thumb-box.traseira {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: end; /* Centraliza APENAS este item na coluna 1 */
+}
+
+/* ITEM DA COLUNA 3 / LINHA 2 (Dianteira) */
+.thumb-box.dianteira {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: start; /* Centraliza APENAS este item na coluna 3 */
+}
+
+
+.thumb-box span {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.thumb-box img {
+    width: 100%;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.thumb-box img:hover {
+    transform: scale(1.04);
+}
 
         /* FRAME DE ALERTA DE AVARIAS */
         .alerta-avaria-box {
@@ -304,7 +340,7 @@
             max-width: 90%;
             max-height: 90%;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(114, 106, 106, 0.2);
         }
 
         /* RODAPÉ PADRÃO */
@@ -319,15 +355,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            font-size: 13px;
+            gap: 5px;
+            font-size: 12px;
             color: var(--azul-escuro);
         }
 
-        .desenvolvedor img {
-            height: 22px;
-            object-fit: contain;
-        }
+       
+        
     </style>
 </head>
 <body>
@@ -392,57 +426,53 @@
                 <button class="fechar-modal" onclick="fecharModal()">&times;</button>
             </div>
 
-            <!-- CARRO COM MINIATURAS AO REDOR -->
-            <div class="diagrama-carro-container">
-                <div class="thumb-box" style="grid-column: 1; grid-row: 1;">
-                    <span>Dianteira</span>
-                    <img id="imgDianteira" src="" onclick="abrirZoom(this.src)">
-                </div>
-
-                <div class="thumb-box" style="grid-column: 1; grid-row: 2;">
-                    <span>Lat. Esquerda</span>
-                    <img id="imgLatEsq" src="" onclick="abrirZoom(this.src)">
-                </div>
-
-                <!-- IMAGEM CENTRAL DO CARRO LOCAL -->
-                <img src="CARRO.png" alt="Desenho do Veículo" class="carro-imagem-central" onerror="this.src='Imagens_Logos/CARRO.png'">
-
-                <div class="thumb-box" style="grid-column: 3; grid-row: 1;">
-                    <span>Traseira</span>
-                    <img id="imgTraseira" src="" onclick="abrirZoom(this.src)">
-                </div>
-
-                <div class="thumb-box" style="grid-column: 3; grid-row: 2;">
-                    <span>Lat. Direita</span>
-                    <img id="imgLatDir" src="" onclick="abrirZoom(this.src)">
-                </div>
-            </div>
-
-            <!-- FRAME DE AVARIAS -->
-            <div class="alerta-avaria-box" id="boxAvarias" style="display: none;">
-                <div class="alerta-titulo">
-                    ⚠️ <span>Avarias Identificadas</span>
-                </div>
-                <p class="alerta-descricao" id="descAvarias">Nenhuma descrição fornecida.</p>
-                <div class="grid-avarias-fotos" id="fotosAvariasContainer">
-                    <!-- Fotos das avarias inseridas dinamicamente -->
-                </div>
-            </div>
-        </div>
+<div class="diagrama-carro-container">
+    
+    <!-- LATERAL ESQUERDA (Topo - Afastada para cima) -->
+    <div class="thumb-box topo">
+        <span>Lat. Esquerda</span>
+        <img id="imgLatEsq" src="" onclick="abrirZoom(this.src)">
     </div>
+
+    <!-- TRASEIRA (Esquerda - Próxima ao porta-malas) -->
+        <div class="thumb-box traseira">
+            <span>Traseira</span>
+            <img id="imgTraseira" src="" onclick="abrirZoom(this.src)">
+        </div>
+
+    <!-- CARRO CENTRAL -->
+    <img src="CARRO.png" alt="Desenho do Veículo" class="carro-imagem-central" onerror="this.src='Imagens_Logos/CARRO.png'">
+
+    <div class="thumb-box dianteira">
+        <span>Dianteira</span>
+        <img id="imgDianteira" src="" onclick="abrirZoom(this.src)">
+    </div>
+
+    <!-- LATERAL DIREITA (Baixo - Afastada para baixo) -->
+    <div class="thumb-box baixo">
+        <span>Lat. Direita</span>
+        <img id="imgLatDir" src="" onclick="abrirZoom(this.src)">
+    </div>
+
+</div>
+
+<!-- FRAME DE AVARIAS -->
+<div class="alerta-avaria-box" id="boxAvarias" style="display: none;">
+    <div class="alerta-titulo">
+        ⚠️ <span>Avarias Identificadas</span>
+    </div>
+    <p class="alerta-descricao" id="descAvarias">Nenhuma descrição fornecida.</p>
+    <div class="grid-avarias-fotos" id="fotosAvariasContainer">
+        <!-- Fotos das avarias inseridas dinamicamente -->
+    </div>
+</div>
 
     <!-- ZOOM DA IMAGEM -->
     <div class="zoom-overlay" id="zoomOverlay" onclick="fecharZoom()">
         <img id="imgZoomCompleto" src="">
     </div>
 
-    <!-- RODAPÉ -->
-    <footer>
-        <div class="desenvolvedor">
-            <span>Desenvolvido por</span>
-            <img src="Imagens_Logos/logo_MATRIOSKA.png" alt="MATRIOSKA Desenvolvimento e Soluções em Planejamento">
-        </div>
-    </footer>
+  
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzjyYCR__0C0RLLkiTEwQ0SV_HbNJo2bWA40ATiwTutGWeEcFmSkfgf1WkOsFA6BYin5g/exec";
@@ -459,6 +489,16 @@
 
         window.addEventListener("load", buscarVistorias);
 
+        // Converte o link padrão do Google Drive para o link direto
+        function converterUrlDrive(url) {
+            if (!url) return '';
+            const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            }
+            return url;
+        }
+
         async function buscarVistorias() {
             try {
                 const response = await fetch(API_URL);
@@ -473,62 +513,6 @@
             }
         }
 
-// Função que converte links padrão do Google Drive para URLs de renderização de imagem
-function formatarUrlImagem(url) {
-    if (!url || typeof url !== "string" || !url.startsWith("http")) {
-        return "https://placehold.co/200x150/e0dcd6/011e38?text=Sem+Foto";
-    }
-    
-    // Se for link do Google Drive, extrai o ID do arquivo e converte para imagem direta
-    if (url.includes("drive.google.com") || url.includes("googleusercontent.com")) {
-        // Tenta extrair o ID da URL
-        const match = url.match(/\/d\/([^\/\?]+)/) || url.match(/id=([^\&]+)/);
-        if (match && match[1]) {
-            return "https://lh3.googleusercontent.com/d/" + match[1];
-        }
-    }
-    return url;
-}
-
-function abrirDetalhes(placa) {
-    const item = dadosVistorias.find(v => String(v[4]).toUpperCase() === placa.toUpperCase());
-    if (!item) return;
-
-    document.getElementById("modalMotorista").innerText = `Motorista: ${item[2] || "Não informado"}`;
-    document.getElementById("modalPlaca").innerText = `Placa: ${item[4] || "-"}`;
-
-    // Passa todos os links das fotos pela função formatarUrlImagem
-    document.getElementById("imgDianteira").src = formatarUrlImagem(item[7]);
-    document.getElementById("imgTraseira").src  = formatarUrlImagem(item[8]);
-    document.getElementById("imgLatEsq").src    = formatarUrlImagem(item[9]);
-    document.getElementById("imgLatDir").src    = formatarUrlImagem(item[10]);
-
-    const possuiAvaria = String(item[11]).toUpperCase().trim() === "SIM";
-    const boxAvarias = document.getElementById("boxAvarias");
-
-    if (possuiAvaria) {
-        boxAvarias.style.display = "block";
-        document.getElementById("descAvarias").innerText = item[12] || "Sem descrição detalhada.";
-
-        const containerFotos = document.getElementById("fotosAvariasContainer");
-        containerFotos.innerHTML = "";
-
-        for (let i = 13; i <= 17; i++) {
-            if (item[i] && String(item[i]).startsWith("http")) {
-                const urlTratada = formatarUrlImagem(item[i]);
-                const img = document.createElement("img");
-                img.src = urlTratada;
-                img.onclick = () => abrirZoom(urlTratada);
-                containerFotos.appendChild(img);
-            }
-        }
-    } else {
-        boxAvarias.style.display = "none";
-    }
-
-    document.getElementById("modalDetalhes").style.display = "flex";
-}
-        
         function renderizarTabela(lista) {
             const tbody = document.getElementById("tabelaCorpo");
             tbody.innerHTML = "";
@@ -590,10 +574,12 @@ function abrirDetalhes(placa) {
             document.getElementById("modalMotorista").innerText = `Motorista: ${item[2] || "Não informado"}`;
             document.getElementById("modalPlaca").innerText = `Placa: ${item[4] || "-"}`;
 
-            document.getElementById("imgDianteira").src = item[7] || "https://via.placeholder.com/150?text=Sem+Foto";
-            document.getElementById("imgTraseira").src  = item[8] || "https://via.placeholder.com/150?text=Sem+Foto";
-            document.getElementById("imgLatEsq").src    = item[9] || "https://via.placeholder.com/150?text=Sem+Foto";
-            document.getElementById("imgLatDir").src    = item[10] || "https://via.placeholder.com/150?text=Sem+Foto";
+            // Passa os links das fotos de cada ângulo pelo conversor do Drive
+            const placeholder = "https://via.placeholder.com/150?text=Sem+Foto";
+            document.getElementById("imgDianteira").src = converterUrlDrive(item[7]) || placeholder;
+            document.getElementById("imgTraseira").src  = converterUrlDrive(item[8]) || placeholder;
+            document.getElementById("imgLatEsq").src    = converterUrlDrive(item[9]) || placeholder;
+            document.getElementById("imgLatDir").src    = converterUrlDrive(item[10]) || placeholder;
 
             const possuiAvaria = String(item[11]).toUpperCase().trim() === "SIM";
             const boxAvarias = document.getElementById("boxAvarias");
@@ -605,11 +591,13 @@ function abrirDetalhes(placa) {
                 const containerFotos = document.getElementById("fotosAvariasContainer");
                 containerFotos.innerHTML = "";
 
+                // Percorre as colunas de fotos de avarias (índices 13 a 17)
                 for (let i = 13; i <= 17; i++) {
-                    if (item[i] && item[i].startsWith("http")) {
+                    if (item[i] && String(item[i]).startsWith("http")) {
+                        const urlTratada = converterUrlDrive(item[i]);
                         const img = document.createElement("img");
-                        img.src = item[i];
-                        img.onclick = () => abrirZoom(item[i]);
+                        img.src = urlTratada;
+                        img.onclick = () => abrirZoom(urlTratada);
                         containerFotos.appendChild(img);
                     }
                 }

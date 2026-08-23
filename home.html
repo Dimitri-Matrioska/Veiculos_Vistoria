@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Início · Vistoria de Veículos</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --marinho: #10192E;
+            --marinho-hover: #1B2A4A;
+            --royal: #3D4FE8;
+            --salmao: #F0C089;
+            --bege: #F5F1EB;
+            --branco: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--branco);
+            font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+            color: var(--marinho);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =========================
+           CABEÇALHO
+           ========================= */
+
+        #topo {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 18px 22px;
+
+            background: var(--branco);
+            border-bottom: 1px solid rgba(16, 25, 46, 0.08);
+
+            z-index: 10;
+        }
+
+        #topo img {
+            height: 30px;
+            width: auto;
+        }
+
+        .btn-sair {
+            position: absolute;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            display: none;
+        }
+
+        /* =========================
+           CONTEÚDO
+           ========================= */
+
+        #app {
+            min-height: calc(100vh - 68px);
+
+            display: flex;
+            justify-content: center;
+
+            padding: 34px 20px 40px;
+
+            opacity: 0;
+            transform: translateY(12px);
+
+            transition:
+                opacity 0.6s ease,
+                transform 0.6s ease;
+        }
+
+        #app.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .saudacao {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+
+            margin-bottom: 4px;
+        }
+
+        .saudacao span {
+            font-weight: 400;
+            opacity: 0.55;
+        }
+
+        .contexto {
+            font-size: 13px;
+            opacity: 0.55;
+
+            margin-bottom: 8px;
+        }
+
+        .acento {
+            width: 40px;
+            height: 4px;
+
+            background: var(--salmao);
+            border-radius: 4px;
+
+            margin-bottom: 28px;
+        }
+
+        /* =========================
+           CARDS DE OPÇÃO
+           ========================= */
+
+        .opcoes {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .opcao {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            width: 100%;
+
+            background: var(--bege);
+            border: none;
+            border-radius: 18px;
+
+            padding: 18px;
+
+            text-align: left;
+            text-decoration: none;
+            color: var(--marinho);
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px rgba(16, 25, 46, 0.06);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .opcao:active {
+            transform: scale(0.98);
+        }
+
+        .opcao:hover {
+            box-shadow:
+                0 10px 26px rgba(16, 25, 46, 0.10);
+        }
+
+        .opcao-icone {
+            flex-shrink: 0;
+
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background: var(--branco);
+            color: var(--royal);
+        }
+
+        .opcao-icone svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .opcao-texto {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .opcao-titulo {
+            font-size: 16px;
+            font-weight: 700;
+
+            margin-bottom: 2px;
+        }
+
+        .opcao-subtitulo {
+            font-size: 12.5px;
+            opacity: 0.6;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .opcao-seta {
+            flex-shrink: 0;
+            color: var(--marinho);
+            opacity: 0.35;
+        }
+
+        .opcao-seta svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Estado desativado (sem permissão) */
+        .opcao.desativada {
+            background: var(--branco);
+            border: 1.5px solid rgba(16, 25, 46, 0.08);
+
+            box-shadow: none;
+            cursor: not-allowed;
+
+            pointer-events: none;
+        }
+
+        .opcao.desativada .opcao-icone {
+            background: rgba(16, 25, 46, 0.05);
+            color: rgba(16, 25, 46, 0.3);
+        }
+
+        .opcao.desativada .opcao-titulo {
+            color: rgba(16, 25, 46, 0.4);
+        }
+
+        .opcao.desativada .opcao-subtitulo {
+            opacity: 0.35;
+        }
+
+        .opcao.desativada .opcao-seta {
+            display: none;
+        }
+
+        .tag-bloqueado {
+            flex-shrink: 0;
+
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+
+            color: rgba(16, 25, 46, 0.4);
+
+            background: rgba(16, 25, 46, 0.06);
+            border-radius: 6px;
+
+            padding: 4px 8px;
+        }
+
+        /* =========================
+           SAIR / RODAPÉ
+           ========================= */
+
+        .sair {
+            display: block;
+
+            margin: 30px auto 0;
+
+            text-align: center;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            color: var(--marinho);
+            opacity: 0.5;
+
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+
+            transition: opacity 0.2s ease;
+        }
+
+        .sair:hover {
+            opacity: 0.85;
+        }
+
+        footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            padding: 0 20px 30px;
+        }
+
+        footer span {
+            font-size: 10px;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+
+            opacity: 0.4;
+
+            margin-bottom: 8px;
+        }
+
+        footer img {
+            width: 84px;
+            height: auto;
+
+            opacity: 0.85;
+        }
+
+        @media (min-width: 600px) {
+
+            #topo,
+            #app {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+
+            #topo img {
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         CABEÇALHO
+         ========================= -->
+
+    <header id="topo">
+
+        <img src="Imagens_Logos/logo_GB2.png" alt="GB">
+
+        <img src="Imagens_Logos/logo_AFRY.png" alt="AFRY">
+
+    </header>
+
+
+    <!-- =========================
+         CONTEÚDO
+         ========================= -->
+
+    <main id="app">
+
+        <div class="container">
+
+            <h1 class="saudacao">
+                Olá, <span id="nomeUsuario">usuário</span>
+            </h1>
+
+            <p class="contexto" id="perfilUsuario"></p>
+
+            <div class="acento"></div>
+
+            <nav class="opcoes">
+
+                <a class="opcao" id="opcaoVistoria" href="cadastro.html">
+
+                    <div class="opcao-icone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </div>
+
+                    <div class="opcao-texto">
+                        <div class="opcao-titulo">Realizar Vistoria</div>
+                        <div class="opcao-subtitulo">Cadastrar uma nova inspeção de veículo</div>
+                    </div>
+
+                    <div class="opcao-seta">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18l6-6-6-6"></path>
+                        </svg>
+                    </div>
+
+                    <span class="tag-bloqueado" style="display:none;">Sem acesso</span>
+
+                </a>
+
+                <a class="opcao" id="opcaoDados" href="dados.html">
+
+                    <div class="opcao-icone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+
+                    <div class="opcao-texto">
+                        <div class="opcao-titulo">Acessar Dados</div>
+                        <div class="opcao-subtitulo">Consultar vistorias já realizadas</div>
+                    </div>
+
+                    <div class="opcao-seta">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18l6-6-6-6"></path>
+                        </svg>
+                    </div>
+
+                    <span class="tag-bloqueado" style="display:none;">Sem acesso</span>
+
+                </a>
+
+                <a class="opcao" id="opcaoUsuarios" href="usuarios.html">
+
+                    <div class="opcao-icone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="17" y1="11" x2="23" y2="11"></line>
+                        </svg>
+                    </div>
+
+                    <div class="opcao-texto">
+                        <div class="opcao-titulo">Cadastrar Usuários</div>
+                        <div class="opcao-subtitulo">Adicionar ou gerenciar acessos</div>
+                    </div>
+
+                    <div class="opcao-seta">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18l6-6-6-6"></path>
+                        </svg>
+                    </div>
+
+                    <span class="tag-bloqueado" style="display:none;">Sem acesso</span>
+
+                </a>
+
+            </nav>
+
+            <button class="sair" id="btnSair" type="button">
+                Sair do sistema
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <footer>
+
+        <span>Desenvolvido por</span>
+
+        <img
+            src="Imagens_Logos/logo_MATRIOSKA.png"
+            alt="MATRIOSKA Desenvolvimento e Soluções em Planejamento"
+        >
+
+    </footer>
+
+
+    <script>
+        // =========================
+        // PERMISSÕES POR PERFIL
+        // =========================
+        // Ajuste aqui se as regras de acesso mudarem.
+        const PERMISSOES = {
+            VISTORIADOR:    { vistoria: true,  dados: false, usuarios: false },
+            ADMINISTRADOR:  { vistoria: true,  dados: true,  usuarios: false },
+            MASTER:         { vistoria: true,  dados: true,  usuarios: true  }
+        };
+
+        const usuarioSessao = JSON.parse(sessionStorage.getItem("usuarioLogado") || "null");
+
+        if (!usuarioSessao) {
+            window.location.href = "index.html";
+        } else {
+
+            const perfil = String(usuarioSessao.perfil || "").toUpperCase().trim();
+            const permissoes = PERMISSOES[perfil] || { vistoria: false, dados: false, usuarios: false };
+
+            document.getElementById("nomeUsuario").innerText = usuarioSessao.nome || "usuário";
+            document.getElementById("perfilUsuario").innerText = perfil.charAt(0) + perfil.slice(1).toLowerCase();
+
+            function aplicarPermissao(idOpcao, liberado) {
+                const opcao = document.getElementById(idOpcao);
+                if (!opcao) return;
+
+                if (!liberado) {
+                    opcao.classList.add("desativada");
+                    opcao.removeAttribute("href");
+                    opcao.setAttribute("aria-disabled", "true");
+                    opcao.querySelector(".tag-bloqueado").style.display = "inline-block";
+                }
+            }
+
+            aplicarPermissao("opcaoVistoria", permissoes.vistoria);
+            aplicarPermissao("opcaoDados", permissoes.dados);
+            aplicarPermissao("opcaoUsuarios", permissoes.usuarios);
+
+            document.getElementById("app").classList.add("visible");
+        }
+
+        document.getElementById("btnSair").addEventListener("click", function () {
+            sessionStorage.removeItem("usuarioLogado");
+            window.location.href = "index.html";
+        });
+    </script>
+
+</body>
+</html>

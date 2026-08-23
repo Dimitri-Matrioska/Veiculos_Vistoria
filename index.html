@@ -6,9 +6,16 @@
 
     <title>Vistoria de Veículos</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --azul: #011E38;
+            --marinho: #10192E;
+            --marinho-hover: #1B2A4A;
+            --royal: #3D4FE8;
+            --salmao: #F0C089;
             --bege: #F5F1EB;
             --branco: #FFFFFF;
         }
@@ -22,8 +29,9 @@
         body {
             min-height: 100vh;
             background: var(--branco);
-            font-family: Arial, Helvetica, sans-serif;
-            color: var(--azul);
+            font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+            color: var(--marinho);
+            -webkit-font-smoothing: antialiased;
         }
 
         /* =========================
@@ -36,24 +44,89 @@
             background: var(--branco);
 
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
 
             z-index: 9999;
 
             transition:
-                opacity 0.7s ease,
+                opacity 0.9s ease,
                 visibility 0.7s ease;
         }
 
-        #loading img {
-            width: min(75vw, 320px);
+        #loading img.gif-carregando {
+            width: min(70vw, 760px);
             height: auto;
         }
 
         #loading.hidden {
             opacity: 0;
             visibility: hidden;
+        }
+
+        .loading-rodape {
+            position: absolute;
+            bottom: 34px;
+            left: 0;
+            right: 0;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-rodape span {
+            font-size: 11px;
+            font-style: italic;
+            letter-spacing: 0.5px;
+
+            color: var(--marinho);
+            opacity: 0.55;
+
+            margin-bottom: 10px;
+        }
+
+        .loading-rodape img {
+            width: 130px;
+            height: auto;
+        }
+
+        /* =========================
+           CABEÇALHO (só aparece após o carregamento)
+           ========================= */
+
+        #topo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 18px 24px;
+
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+
+            transition:
+                opacity 0.7s ease,
+                transform 0.7s ease;
+
+            z-index: 10;
+        }
+
+        #topo.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #topo img {
+            height: 34px;
+            width: auto;
         }
 
         /* =========================
@@ -67,7 +140,7 @@
             justify-content: center;
             align-items: center;
 
-            padding: 30px 20px;
+            padding: 90px 20px 40px;
 
             opacity: 0;
             transform: translateY(15px);
@@ -96,21 +169,31 @@
            ========================= */
 
         .titulo {
-            font-size: 25px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            text-align: left;
 
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .subtitulo {
             font-size: 14px;
-            text-align: center;
+            text-align: left;
 
-            opacity: 0.7;
+            opacity: 0.6;
 
-            margin-bottom: 35px;
+            margin-bottom: 14px;
+        }
+
+        .acento {
+            width: 40px;
+            height: 4px;
+
+            background: var(--salmao);
+            border-radius: 4px;
+
+            margin-bottom: 26px;
         }
 
         /* =========================
@@ -122,46 +205,44 @@
 
             background: var(--bege);
 
-            border-radius: 18px;
+            border-radius: 22px;
 
-            padding: 28px 22px;
+            padding: 30px 24px;
 
             box-shadow:
-                0 8px 25px rgba(1, 30, 56, 0.08);
-        }
-
-        .login-title {
-            font-size: 20px;
-            font-weight: 700;
-
-            margin-bottom: 22px;
+                0 12px 32px rgba(16, 25, 46, 0.10),
+                0 2px 8px rgba(16, 25, 46, 0.06);
         }
 
         .campo {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .campo label {
             display: block;
 
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
 
-            margin-bottom: 7px;
+            opacity: 0.6;
+
+            margin-bottom: 8px;
         }
 
         .campo input {
             width: 100%;
 
-            height: 48px;
+            height: 50px;
 
-            border: 1.5px solid rgba(1, 30, 56, 0.25);
-            border-radius: 10px;
+            border: 1.5px solid rgba(16, 25, 46, 0.16);
+            border-radius: 12px;
 
             padding: 0 14px;
 
             font-size: 16px;
-            color: var(--azul);
+            color: var(--marinho);
 
             background: var(--branco);
 
@@ -173,32 +254,95 @@
         }
 
         .campo input:focus {
-            border-color: var(--azul);
+            border-color: var(--royal);
 
             box-shadow:
-                0 0 0 3px rgba(1, 30, 56, 0.08);
+                0 0 0 3px rgba(61, 79, 232, 0.16);
+        }
+
+        .campo select {
+            width: 100%;
+
+            height: 50px;
+
+            border: 1.5px solid rgba(16, 25, 46, 0.16);
+            border-radius: 12px;
+
+            padding: 0 40px 0 14px;
+
+            font-size: 16px;
+            color: var(--marinho);
+
+            background: var(--branco);
+
+            outline: none;
+
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310192e'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .campo select:focus {
+            border-color: var(--royal);
+
+            box-shadow:
+                0 0 0 3px rgba(61, 79, 232, 0.16);
+        }
+
+        .campo select:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* Campo de senha: animação suave ao surgir */
+        #campo-senha {
+            max-height: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+            opacity: 0;
+
+            transition:
+                max-height 0.35s ease,
+                opacity 0.3s ease,
+                margin-bottom 0.35s ease;
+        }
+
+        #campo-senha.mostrar {
+            max-height: 100px;
+            margin-bottom: 18px;
+            opacity: 1;
         }
 
         .botao-login {
             width: 100%;
-            height: 50px;
+            height: 52px;
 
-            margin-top: 8px;
+            margin-top: 6px;
 
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
 
-            background: var(--azul);
+            background: var(--marinho);
             color: var(--branco);
 
             font-size: 16px;
             font-weight: 700;
+            letter-spacing: 0.2px;
 
             cursor: pointer;
 
             transition:
                 transform 0.15s ease,
-                opacity 0.15s ease;
+                opacity 0.15s ease,
+                background 0.2s ease;
         }
 
         .botao-login:active {
@@ -206,40 +350,52 @@
         }
 
         .botao-login:hover {
-            opacity: 0.92;
+            background: var(--marinho-hover);
+        }
+
+        .botao-login:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .esqueci {
             display: block;
 
-            margin-top: 18px;
+            margin-top: 20px;
 
             text-align: center;
 
-            color: var(--azul);
+            color: var(--marinho);
 
             font-size: 13px;
             text-decoration: none;
 
-            opacity: 0.75;
+            opacity: 0.65;
+
+            transition: opacity 0.2s ease;
+        }
+
+        .esqueci:hover {
+            opacity: 1;
         }
 
         /* Mensagem de Erro Integrada ao Estilo */
         #msg-erro {
             color: #d9534f;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 12px;
             display: none;
         }
 
         /* =========================
-           DESENVOLVEDOR
+           DESENVOLVEDOR (rodapé da tela de login)
            ========================= */
 
         .desenvolvedor {
-            margin-top: 45px;
+            margin-top: 28px;
 
             display: flex;
             flex-direction: column;
@@ -247,20 +403,23 @@
         }
 
         .desenvolvedor span {
-            font-size: 11px;
+            font-size: 10px;
+            font-style: italic;
 
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
 
             text-transform: uppercase;
 
-            opacity: 0.55;
+            opacity: 0.45;
 
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .desenvolvedor img {
-            width: 145px;
+            width: 84px;
             height: auto;
+
+            opacity: 0.85;
         }
 
         /* =========================
@@ -270,7 +429,7 @@
         @media (max-height: 700px) {
 
             #app {
-                padding-top: 20px;
+                padding-top: 80px;
                 padding-bottom: 20px;
             }
 
@@ -279,18 +438,26 @@
             }
 
             .desenvolvedor {
-                margin-top: 25px;
+                margin-top: 20px;
             }
         }
 
         @media (min-width: 600px) {
 
             #app {
-                padding: 40px;
+                padding: 100px 40px 40px;
             }
 
             .container {
                 max-width: 390px;
+            }
+
+            #topo {
+                padding: 26px 40px;
+            }
+
+            #topo img {
+                height: 40px;
             }
         }
     </style>
@@ -305,11 +472,36 @@
     <div id="loading">
 
         <img
+            class="gif-carregando"
             src="Imagens_Logos/Logo_animada2.gif"
             alt="Carregando"
         >
 
+        <div class="loading-rodape">
+
+            <span>Desenvolvido por</span>
+
+            <img
+                src="Imagens_Logos/logo_MATRIOSKA.png"
+                alt="MATRIOSKA Desenvolvimento e Soluções em Planejamento"
+            >
+
+        </div>
+
     </div>
+
+
+    <!-- =========================
+         CABEÇALHO
+         ========================= -->
+
+    <header id="topo">
+
+        <img src="Imagens_Logos/logo_GB2.png" alt="GB">
+
+        <img src="Imagens_Logos/logo_AFRY.png" alt="AFRY">
+
+    </header>
 
 
     <!-- =========================
@@ -320,44 +512,41 @@
 
         <div class="container">
 
-            <h1 class="titulo">
-                Vistoria de Veículos
-            </h1>
-
-            <p class="subtitulo">
-                Sistema de controle e inspeção
-            </p>
-
 
             <!-- LOGIN -->
 
             <section class="login-box">
 
-                <h2 class="login-title">
-                    Acessar sistema
-                </h2>
+                <h1 class="titulo">
+                    COLOQUE UM NOME AQUI
+                </h1>
+
+                <p class="subtitulo">
+                    Sistema de controle e inspeção
+                </p>
+
+                <div class="acento"></div>
 
                 <form id="loginForm">
 
                     <div class="campo">
 
                         <label for="usuario">
-                            Usuário ou CPF
+                            Usuário
                         </label>
 
-                        <input
-                            type="text"
+                        <select
                             id="usuario"
                             name="usuario"
-                            placeholder="Digite seu usuário ou CPF"
-                            autocomplete="username"
                             required
                         >
+                            <option value="" disabled selected>Carregando usuários...</option>
+                        </select>
 
                     </div>
 
 
-                    <div class="campo" id="campo-senha" style="display: none;">
+                    <div class="campo" id="campo-senha">
 
                         <label for="senha">
                             Senha
@@ -420,16 +609,18 @@
 
    <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzjyYCR__0C0RLLkiTEwQ0SV_HbNJo2bWA40ATiwTutGWeEcFmSkfgf1WkOsFA6BYin5g/exec";
-  
-    
-    const TEMPO_SPLASH = 1200;
+
+
+    const TEMPO_SPLASH = 2500;
 
     window.addEventListener("load", function () {
         setTimeout(function () {
             const loading = document.getElementById("loading");
             const app = document.getElementById("app");
+            const topo = document.getElementById("topo");
 
             loading.classList.add("hidden");
+            topo.classList.add("visible");
 
             setTimeout(function () {
                 app.classList.add("visible");
@@ -438,52 +629,66 @@
         }, TEMPO_SPLASH);
     });
 
-    const inputUsuario = document.getElementById("usuario");
+    const selectUsuario = document.getElementById("usuario");
     const campoSenha = document.getElementById("campo-senha");
     const inputSenha = document.getElementById("senha");
     const msgErro = document.getElementById("msg-erro");
     const btnSubmit = document.getElementById("btnSubmit");
 
-    // Monitora a digitação no campo de usuário/CPF
-    inputUsuario.addEventListener("input", async function () {
-        const valor = this.value.trim();
+    // Carrega a lista de usuários da planilha assim que a página abre
+    async function carregarUsuarios() {
+        selectUsuario.disabled = true;
 
-        // Limpa mensagens anteriores ao redefinir campo
+        try {
+            const response = await fetch(`${API_URL}?action=listarUsuarios`);
+            const result = await response.json();
+
+            if (result.status !== "success" || !Array.isArray(result.data)) {
+                throw new Error("Resposta inválida do servidor.");
+            }
+
+            // data[0] é o cabeçalho da planilha (Página2): CPF | Nome | Senha | Perfil | Status
+            const linhas = result.data.slice(1);
+
+            selectUsuario.innerHTML = '<option value="" disabled selected>Selecione seu usuário</option>';
+
+            linhas.forEach(function (linha) {
+                const cpf = String(linha[0] || "").trim();
+                const nome = String(linha[1] || "").trim();
+                const perfil = String(linha[3] || "").trim();
+                const status = String(linha[4] || "").trim();
+
+                if (!nome) return;
+                if (status && status.toUpperCase() !== "ATIVO") return; // pula usuários inativos
+
+                const option = document.createElement("option");
+                option.value = nome;
+                option.textContent = nome;
+                option.dataset.perfil = perfil.toUpperCase();
+                option.dataset.cpf = cpf;
+                selectUsuario.appendChild(option);
+            });
+        } catch (err) {
+            console.error("Erro ao carregar usuários:", err);
+            selectUsuario.innerHTML = '<option value="" disabled selected>Erro ao carregar usuários</option>';
+        } finally {
+            selectUsuario.disabled = false;
+        }
+    }
+
+    carregarUsuarios();
+
+    // Ao escolher um usuário, mostra o campo de senha se for ADMINISTRADOR ou MASTER
+    selectUsuario.addEventListener("change", function () {
         msgErro.style.display = "none";
 
-        // Se o valor contiver letras (ex: nome), exibe o campo de senha imediatamente
-        if (isNaN(valor) && valor.length > 2) {
+        const opcaoSelecionada = selectUsuario.options[selectUsuario.selectedIndex];
+        const perfil = opcaoSelecionada ? opcaoSelecionada.dataset.perfil : "";
+
+        if (perfil === "ADMINISTRADOR" || perfil === "MASTER") {
             exibirCampoSenha(true);
-            return;
-        }
-
-        // Se for um CPF completo (11 dígitos)
-        if (valor.length === 11 && !isNaN(valor)) {
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Verificando...";
-
-            try {
-                // Consulta prévia do perfil
-                const response = await fetch(`${API_URL}?action=login&identifier=${encodeURIComponent(valor)}&password=`);
-                const result = await response.json();
-
-                if (result.status === "error" && result.message === "Senha incorreta.") {
-                    // Significa que o usuário foi achado e EXIGE senha (ADMIN/MASTER)
-                    exibirCampoSenha(true);
-                    inputSenha.focus();
-                } else if (result.status === "success") {
-                    // É Vistoriador e não exige senha -> Executa login automático direto!
-                    efetuarRedirecionamento(result.user);
-                } else {
-                    exibirCampoSenha(false);
-                }
-            } catch (err) {
-                console.error("Erro na consulta do perfil:", err);
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Entrar";
-            }
-        } else if (valor.length < 11 && !isNaN(valor)) {
+            inputSenha.focus();
+        } else {
             exibirCampoSenha(false);
         }
     });
@@ -492,7 +697,7 @@
     document.getElementById("loginForm").addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const usuarioInput = inputUsuario.value.trim();
+        const usuarioInput = selectUsuario.value.trim();
         const senhaInput = inputSenha.value.trim();
 
         msgErro.style.display = "none";
@@ -523,10 +728,10 @@
 
     function exibirCampoSenha(exibir) {
         if (exibir) {
-            campoSenha.style.display = "block";
+            campoSenha.classList.add("mostrar");
             inputSenha.setAttribute("required", "required");
         } else {
-            campoSenha.style.display = "none";
+            campoSenha.classList.remove("mostrar");
             inputSenha.removeAttribute("required");
             inputSenha.value = "";
         }
@@ -536,15 +741,13 @@
         sessionStorage.setItem("usuarioLogado", JSON.stringify(user));
         const perfil = String(user.perfil).toUpperCase().trim();
 
-        if (perfil === "VISTORIADOR") {
-            window.location.href = "cadastro.html";
-        } else if (perfil === "ADMINISTRADOR") {
-            window.location.href = "admin.html";
-        } else if (perfil === "MASTER") {
-            window.location.href = "master.html";
+        if (perfil === "VISTORIADOR" || perfil === "ADMINISTRADOR" || perfil === "MASTER") {
+            window.location.href = "home.html";
         } else {
             msgErro.innerText = "Perfil de acesso não reconhecido.";
             msgErro.style.display = "block";
         }
     }
 </script>
+</body>
+</html>

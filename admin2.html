@@ -7,25 +7,20 @@
 
     <title>Cadastro de Vistoria</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <style>
         :root {
-            --marinho: #10192E;
-            --marinho-hover: #1B2A4A;
-            --royal: #3D4FE8;
+            --azul-escuro: #011E38;
+            --azul: #264FEC;
             --off-white: #F5F1EB;
-            --salmao: #F0C089;
-            --cinza-borda: rgba(16, 25, 46, 0.12);
+            --salmao: #FFBC82;
+            --cinza-borda: #E0DCD6;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         html,
@@ -36,7 +31,7 @@
 
         body {
             background-color: var(--off-white);
-            color: var(--marinho);
+            color: var(--azul-escuro);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -47,16 +42,13 @@
         ===================================================== */
 
         header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-
             background-color: #FFFFFF;
-            padding: 14px 18px;
+            padding: 10px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--cinza-borda);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             min-height: 58px;
         }
 
@@ -67,35 +59,10 @@
         }
 
         .logo-box img {
-            height: 28px;
+            height: 30px;
             max-width: 100%;
             width: auto;
             object-fit: contain;
-        }
-
-        .voltar-menu {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--marinho);
-            opacity: 0.55;
-            text-decoration: none;
-
-            margin-bottom: 14px;
-
-            transition: opacity 0.2s ease;
-        }
-
-        .voltar-menu:hover {
-            opacity: 0.9;
-        }
-
-        .voltar-menu svg {
-            width: 14px;
-            height: 14px;
         }
 
         /* =====================================================
@@ -112,44 +79,23 @@
 
         .card-form {
             background-color: #FFFFFF;
-            border-radius: 18px;
+            border-radius: 10px;
             border: 1px solid var(--cinza-borda);
-            padding: 22px 18px;
-            box-shadow:
-                0 10px 28px rgba(16, 25, 46, 0.07),
-                0 2px 8px rgba(16, 25, 46, 0.05);
+            padding: 18px 14px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
         }
 
         .titulo-pagina {
             font-size: 21px;
-            font-weight: 800;
-            margin-bottom: 6px;
-            color: var(--marinho);
-        }
-
-        .acento {
-            width: 36px;
-            height: 4px;
-
-            background: var(--salmao);
-            border-radius: 4px;
-
-            margin-bottom: 12px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--azul-escuro);
         }
 
         .subtitulo {
-            display: inline-flex;
-            align-items: center;
-
-            font-size: 11.5px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            font-size: 12px;
             line-height: 1.4;
-
-            color: var(--marinho);
-            opacity: 0.55;
-
+            color: #666;
             margin-bottom: 20px;
         }
 
@@ -160,9 +106,9 @@
         .passos-container {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 22px;
             border-bottom: 2px solid var(--off-white);
-            padding-bottom: 5px;
+            padding-bottom: 12px;
             gap: 5px;
         }
 
@@ -180,7 +126,7 @@
         }
 
         .passo-item.ativo {
-            color: var(--royal);
+            color: var(--azul);
         }
 
         .passo-numero {
@@ -197,7 +143,7 @@
         }
 
         .passo-item.ativo .passo-numero {
-            background-color: var(--royal);
+            background-color: var(--azul);
         }
 
         /* =====================================================
@@ -213,12 +159,12 @@
         }
 
         .secao-titulo {
-            font-size: 10px;
+            font-size: 15px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.4px;
-            color: var(--marinho);
-            margin-bottom: 10px;
+            color: var(--azul-escuro);
+            margin-bottom: 15px;
         }
 
         /* =====================================================
@@ -228,7 +174,7 @@
         .grid-inputs {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 13px;
         }
 
         .grupo-input {
@@ -241,9 +187,7 @@
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            color: var(--marinho);
-            opacity: 0.65;
+            color: var(--azul-escuro);
         }
 
         .grupo-input input,
@@ -252,14 +196,13 @@
             width: 100%;
             padding: 13px 12px;
             min-height: 46px;
-            border: 1.5px solid var(--cinza-borda);
-            border-radius: 10px;
+            border: 1px solid var(--cinza-borda);
+            border-radius: 7px;
             background-color: var(--off-white);
-            color: var(--marinho);
+            color: var(--azul-escuro);
             font-size: 15px;
             outline: none;
             -webkit-appearance: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .grupo-input textarea {
@@ -270,8 +213,7 @@
         .grupo-input input:focus,
         .grupo-input select:focus,
         .grupo-input textarea:focus {
-            border-color: var(--royal);
-            box-shadow: 0 0 0 3px rgba(61, 79, 232, 0.14);
+            border-color: var(--azul);
         }
 
         /* =====================================================
@@ -282,12 +224,12 @@
 
         .diagrama-carro-container {
             display: grid;
-            grid-template-columns: 72px 1fr 72px;
+            grid-template-columns: 62px 1fr 62px;
             grid-template-rows: auto auto auto;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
             justify-items: stretch;
-            margin: 22px 0;
+            margin: 15px 0;
         }
 
         .carro-imagem-central {
@@ -301,9 +243,9 @@
         }
 
         .foto-slot {
-            min-height: 78px;
+            min-height: 64px;
             border: 2px dashed var(--cinza-borda);
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 4px;
             text-align: center;
             background-color: var(--off-white);
@@ -317,11 +259,11 @@
 
         .foto-slot.tem-foto {
             border-style: solid;
-            border-color: var(--royal);
+            border-color: var(--azul);
         }
 
         .foto-slot:active {
-            border-color: var(--royal);
+            border-color: var(--azul);
             background-color: #FFFFFF;
             transform: scale(0.98);
         }
@@ -345,22 +287,11 @@
         }
 
         .icone-camera {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: var(--marinho);
-            opacity: 0.35;
-        }
-
-        .icone-camera svg {
-            width: 17px;
-            height: 17px;
+            font-size: 15px;
         }
 
         .texto-camera {
-            color: var(--marinho);
-            opacity: 0.55;
+            color: var(--azul-escuro);
         }
 
         /* Quando já existe foto: ícone some, mostra miniatura pequena */
@@ -424,60 +355,47 @@
         .botoes-passo {
             display: flex;
             justify-content: space-between;
-            margin-top: 28px;
+            margin-top: 22px;
             gap: 10px;
         }
 
         .btn-nav {
-            min-height: 50px;
-            padding: 12px 18px;
-            border-radius: 12px;
+            min-height: 48px;
+            padding: 12px 16px;
+            border-radius: 7px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             border: none;
-            transition:
-                opacity 0.2s ease,
-                background 0.2s ease,
-                transform 0.15s ease;
+            transition: opacity 0.2s;
             touch-action: manipulation;
         }
 
         .btn-proximo {
-            background-color: var(--royal);
+            background-color: var(--azul);
             color: #FFFFFF;
             margin-left: auto;
         }
 
         .btn-anterior {
-            background-color: var(--off-white);
-            color: var(--marinho);
-            border: 1.5px solid var(--cinza-borda);
+            background-color: var(--cinza-borda);
+            color: var(--azul-escuro);
         }
 
         .btn-salvar {
-            background-color: var(--marinho);
+            background-color: var(--azul-escuro);
             color: #FFFFFF;
             margin-left: auto;
         }
 
-        .btn-nav:hover {
-            filter: brightness(1.08);
-        }
-
-        .btn-anterior:hover {
-            filter: none;
-            background-color: #FFFFFF;
-        }
-
         .btn-nav:active {
+            opacity: 0.8;
             transform: scale(0.98);
         }
 
         .btn-nav:disabled {
             opacity: 0.6;
             cursor: wait;
-            transform: none;
         }
 
         /* =====================================================
@@ -523,7 +441,7 @@
         .modal-upload-titulo {
             font-size: 15px;
             font-weight: 700;
-            color: var(--marinho);
+            color: var(--azul-escuro);
             margin-bottom: 4px;
         }
 
@@ -545,7 +463,7 @@
         .barra-progresso-fill {
             height: 100%;
             width: 0%;
-            background-color: var(--royal);
+            background-color: var(--azul);
             border-radius: 6px;
             transition: width 0.2s ease;
         }
@@ -554,7 +472,7 @@
             margin-top: 8px;
             font-size: 13px;
             font-weight: 700;
-            color: var(--royal);
+            color: var(--azul);
         }
 
         /* =====================================================
@@ -574,16 +492,13 @@
             align-items: center;
             gap: 7px;
             font-size: 10px;
-            font-style: italic;
-            color: var(--marinho);
-            opacity: 0.5;
+            color: var(--azul-escuro);
         }
 
         .desenvolvedor img {
             height: 18px;
             max-width: 120px;
             object-fit: contain;
-            opacity: 0.9;
         }
 
         /* =====================================================
@@ -606,7 +521,7 @@
             }
 
             .card-form {
-                padding: 36px;
+                padding: 30px;
             }
 
             .grid-inputs {
@@ -614,8 +529,8 @@
             }
 
             .diagrama-carro-container {
-                grid-template-columns: 120px 1fr 120px;
-                gap: 22px;
+                grid-template-columns: 100px 1fr 100px;
+                gap: 15px;
             }
 
             .carro-imagem-central {
@@ -624,16 +539,15 @@
             }
 
             .foto-slot {
-                min-height: 95px;
+                min-height: 80px;
             }
 
             .foto-slot label {
                 font-size: 11px;
             }
 
-            .icone-camera svg {
-                width: 20px;
-                height: 20px;
+            .icone-camera {
+                font-size: 18px;
             }
 
             .preview-img {
@@ -674,14 +588,16 @@
 
     <main>
 
-        <a class="voltar-menu" href="home.html">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 18l-6-6 6-6"></path>
-            </svg>
-            Menu
-        </a>
-
         <div class="card-form">
+
+            <h1 class="titulo-pagina">
+                Nova Vistoria
+            </h1>
+
+            <p class="subtitulo" id="infoUsuario">
+                Carregando responsável...
+            </p>
+
 
             <!-- INDICADOR DE PASSOS -->
 
@@ -714,7 +630,9 @@
 
                 <div class="passo-conteudo ativo" id="passo-1">
 
-                    
+                    <div class="secao-titulo">
+                        Informações Gerais
+                    </div>
 
 
                     <div class="grid-inputs">
@@ -847,10 +765,7 @@
                             <label for="fotoDianteira">
 
                                 <span class="icone-camera">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                    📷
                                 </span>
 
                                 <img
@@ -881,10 +796,7 @@
                             <label for="fotoLatEsq">
 
                                 <span class="icone-camera">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                    📷
                                 </span>
 
                                 <img
@@ -893,7 +805,7 @@
                                     alt="Foto lateral esquerda">
 
                                 <span class="texto-camera">
-                                    Esquerda
+                                    Esq.
                                 </span>
 
                             </label>
@@ -915,10 +827,7 @@
                             <label for="fotoTraseira">
 
                                 <span class="icone-camera">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                    📷
                                 </span>
 
                                 <img
@@ -949,10 +858,7 @@
                             <label for="fotoLatDir">
 
                                 <span class="icone-camera">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                    📷
                                 </span>
 
                                 <img
@@ -961,7 +867,7 @@
                                     alt="Foto lateral direita">
 
                                 <span class="texto-camera">
-                                    Direita
+                                    Dir.
                                 </span>
 
                             </label>
@@ -1065,7 +971,7 @@
                             class="secao-titulo"
                             style="font-size: 13px;">
 
-                            Fotos das Avariass
+                            Fotos das Avarias (Opcional)
 
                         </div>
 
@@ -1080,10 +986,7 @@
                                 <label for="fotoAvaria1">
 
                                     <span class="icone-camera">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                        📷
                                     </span>
 
                                     <img
@@ -1114,10 +1017,7 @@
                                 <label for="fotoAvaria2">
 
                                     <span class="icone-camera">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                        📷
                                     </span>
 
                                     <img
@@ -1148,10 +1048,7 @@
                                 <label for="fotoAvaria3">
 
                                     <span class="icone-camera">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                                        <circle cx="12" cy="13" r="4"></circle>
-                                    </svg>
+                                        📷
                                     </span>
 
                                     <img
@@ -1241,7 +1138,7 @@
         <div class="modal-upload-box">
 
             <img
-                src="Imagens_Logos/Logo_animada3.gif"
+                src="Imagens_Logos/Logo_animada2.gif"
                 alt="Enviando..."
                 class="modal-upload-gif">
 
@@ -1293,6 +1190,11 @@
                 alert("Sessão expirada. Faça login novamente.");
 
                 window.location.href = "index.html";
+
+            } else {
+
+                document.getElementById("infoUsuario").innerText =
+                    `Vistoriador responsável: ${usuarioSessao.nome} (${usuarioSessao.cpf})`;
 
             }
 
@@ -1438,98 +1340,70 @@
         }
 
         /* =====================================================
-           BARRA DE PROGRESSO ESTIMADA
-           (o fetch não expõe progresso real de upload, e o
-           XMLHttpRequest tem problemas com o redirect 302 do
-           Google Apps Script em requisições cross-origin, então
-           estimamos o tempo com base no tamanho do payload)
+           ENVIAR PAYLOAD VIA XHR (permite progresso real)
         ===================================================== */
 
-        let progressoIntervalId = null;
+        function enviarComProgresso(url, payload) {
 
-        function iniciarProgressoEstimado(duracaoEstimadaMs) {
+            return new Promise((resolve, reject) => {
 
-            const inicio = Date.now();
+                const xhr = new XMLHttpRequest();
 
-            progressoIntervalId = setInterval(function() {
-
-                const decorrido = Date.now() - inicio;
-
-                let percentual =
-                    (decorrido / duracaoEstimadaMs) * 92;
-
-                if (percentual > 92) {
-
-                    percentual = 92;
-
-                }
-
-                atualizarProgresso(percentual, "Enviando Vistoria...");
-
-            }, 150);
-
-        }
-
-        function pararProgressoEstimado() {
-
-            if (progressoIntervalId) {
-
-                clearInterval(progressoIntervalId);
-
-                progressoIntervalId = null;
-
-            }
-
-        }
-
-        /* =====================================================
-           ENVIAR PAYLOAD (fetch, com progresso estimado)
-        ===================================================== */
-
-        async function enviarComProgresso(url, payload) {
-
-            const payloadTexto = JSON.stringify(payload);
-
-            // Estima duração assumindo ~250KB/s de upload (conservador p/ 4G/wifi fraco)
-            const tamanhoBytes = payloadTexto.length;
-
-            let duracaoEstimadaMs =
-                (tamanhoBytes / (250 * 1024)) * 1000;
-
-            duracaoEstimadaMs =
-                Math.min(Math.max(duracaoEstimadaMs, 2500), 60000);
+                xhr.open("POST", url, true);
 
 
-            iniciarProgressoEstimado(duracaoEstimadaMs);
+                xhr.upload.onprogress = function(evento) {
+
+                    if (evento.lengthComputable) {
+
+                        const percentual =
+                            (evento.loaded / evento.total) * 100;
+
+                        atualizarProgresso(
+                            percentual,
+                            "Enviando Vistoria..."
+                        );
+
+                    }
+
+                };
 
 
-            try {
+                xhr.onload = function() {
 
-                const response = await fetch(url, {
+                    if (xhr.status >= 200 && xhr.status < 300) {
 
-                    method: "POST",
+                        try {
 
-                    body: payloadTexto
+                            resolve(JSON.parse(xhr.responseText));
 
-                });
+                        } catch (err) {
+
+                            reject(err);
+
+                        }
+
+                    } else {
+
+                        reject(
+                            new Error(`Erro HTTP ${xhr.status}`)
+                        );
+
+                    }
+
+                };
 
 
-                const resultado = await response.json();
+                xhr.onerror = function() {
 
-                pararProgressoEstimado();
+                    reject(new Error("Erro de conexão"));
 
-                atualizarProgresso(100, "Concluído!");
-
-                return resultado;
+                };
 
 
-            } catch (err) {
+                xhr.send(JSON.stringify(payload));
 
-                pararProgressoEstimado();
-
-                throw err;
-
-            }
+            });
 
         }
 
@@ -1734,10 +1608,6 @@
 
                         atualizarProgresso(100, "Concluído!");
 
-                        // pequena pausa para o navegador pintar a barra em 100%
-                        // antes do alert() travar a tela
-                        await new Promise(r => setTimeout(r, 400));
-
                         alert(
                             "Vistoria salva com sucesso!"
                         );
@@ -1757,8 +1627,7 @@
                 } catch (err) {
 
                     alert(
-                        "Erro ao conectar com o servidor: " +
-                        (err && err.message ? err.message : err)
+                        "Erro ao conectar com o servidor."
                     );
 
                     console.error(err);
