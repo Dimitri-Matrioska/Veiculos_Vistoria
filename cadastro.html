@@ -47,17 +47,20 @@
         ===================================================== */
 
         header {
-            position: sticky;
+          position: sticky;
             top: 0;
             z-index: 20;
 
-            background-color: var(--off-white);
-            \\padding: 14px 18px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--cinza-borda);
+            justify-content: space-between;
+
+            \\padding: 14px 18px;
+            
+            background: var(--off-white);
             height: 60px;
+            
+            border-bottom: 1px solid solid rgba(16, 25, 46, 0.08);
         }
 
         .logo-box {
@@ -68,12 +71,13 @@
         }
 
         .logo-box img {
-            height: 30px;
+                height: 30px;
             max-width: 100%;
             width: auto;
             object-fit: contain;
              
         }
+
 
         .voltar-menu {
             display: inline-flex;
