@@ -39,29 +39,33 @@
            CABEÇALHO
            ========================= */
 
-        #topo {
+                /* HEADER E LOGOS */
+        header {
             position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            background: var(--off-white);
+            z-index: 20;
             height: 60px;
 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
+            background-color: var(--off-white);
             padding: 14px 18px;
 
-            
-            border-bottom: 1px solid rgba(16, 25, 46, 0.08);
-
-            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--cinza-borda);
         }
 
-        #topo img {
+        .logo-box {
+            display: flex;
+            align-items: center;
+            max-width: 42%;
+        }
+
+        .logo-box img {
             height: 30px;
+            max-width: 100%;
             width: auto;
+            object-fit: contain;
         }
 
         .btn-sair {
