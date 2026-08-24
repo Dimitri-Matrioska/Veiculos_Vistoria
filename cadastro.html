@@ -18,6 +18,7 @@
             --royal: #3D4FE8;
             --off-white: #F5F1EB;
             --salmao: #F0C089;
+            --branco: #FFFFFF;
             --cinza-borda: rgba(16, 25, 46, 0.12);
         }
 
@@ -35,7 +36,7 @@
         }
 
         body {
-            background-color: var(--off-white);
+            background-color: var(--branco);
             color: var(--marinho);
             display: flex;
             flex-direction: column;
@@ -51,23 +52,24 @@
             top: 0;
             z-index: 20;
 
-            background-color: #FFFFFF;
+            background-color: var(--off-white);
             padding: 14px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--cinza-borda);
-            min-height: 58px;
+            height: 60px;
         }
 
         .logo-box {
             display: flex;
             align-items: center;
             max-width: 42%;
+            height: 60px;
         }
 
         .logo-box img {
-            height: 28px;
+            height: 30px;
             max-width: 100%;
             width: auto;
             object-fit: contain;
@@ -1211,25 +1213,7 @@
     </main>
 
 
-    <!-- =====================================================
-         RODAPÉ
-    ===================================================== -->
 
-    <footer>
-
-        <div class="desenvolvedor">
-
-            <span>
-                Desenvolvido por
-            </span>
-
-            <img
-                src="Imagens_Logos/logo_MATRIOSKA.png"
-                alt="MATRIOSKA Desenvolvimento e Soluções em Planejamento">
-
-        </div>
-
-    </footer>
 
 
     <!-- =====================================================
