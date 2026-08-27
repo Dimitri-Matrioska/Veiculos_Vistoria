@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -279,7 +280,7 @@
         }
 
         /* =====================================================
-           
+           DIAGRAMA DO CARRO
         ===================================================== */
 
         .diagrama-carro-container {
@@ -365,7 +366,6 @@
             opacity: 0.55;
         }
 
-        /* Quando já existe foto: ícone some, mostra miniatura pequena */
         .foto-slot.tem-foto .icone-camera {
             display: none;
         }
@@ -379,7 +379,6 @@
             border: 1px solid var(--cinza-borda);
         }
 
-        /* Posições no grid (mesmas no mobile e desktop) */
         .foto-dianteira {
             grid-column: 2;
             grid-row: 1;
@@ -589,6 +588,222 @@
         }
 
         /* =====================================================
+           MODAL DE TERMOS
+        ===================================================== */
+
+        .modal-termos-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(16, 25, 46, 0.78);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-termos-overlay.ativo {
+            display: flex;
+        }
+
+        .modal-termos-box {
+            background-color: #FFFFFF;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 40px rgba(16, 25, 46, 0.25);
+            overflow: hidden;
+        }
+
+        .modal-termos-header {
+            padding: 22px 22px 16px;
+            border-bottom: 1px solid var(--cinza-borda);
+            flex-shrink: 0;
+        }
+
+        .modal-termos-header h2 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--marinho);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .modal-termos-header .acento {
+            margin-bottom: 0;
+        }
+
+        .modal-termos-body {
+            padding: 18px 22px;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-termos-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-termos-body::-webkit-scrollbar-thumb {
+            background-color: var(--cinza-borda);
+            border-radius: 3px;
+        }
+
+        .termo-secao {
+            margin-bottom: 20px;
+        }
+
+        .termo-secao:last-child {
+            margin-bottom: 0;
+        }
+
+        .termo-secao-titulo {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--marinho);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .termo-secao-titulo .numero-secao {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: var(--royal);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .termo-secao p,
+        .termo-secao li {
+            font-size: 13px;
+            line-height: 1.65;
+            color: var(--marinho);
+            opacity: 0.8;
+        }
+
+        .termo-secao ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .termo-secao ul li {
+            position: relative;
+            padding-left: 16px;
+            margin-bottom: 6px;
+        }
+
+        .termo-secao ul li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 6px;
+            height: 6px;
+            background-color: var(--salmao);
+            border-radius: 50%;
+        }
+
+        .termo-declaracao {
+            background-color: var(--off-white);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 4px;
+        }
+
+        .termo-declaracao p {
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: var(--marinho);
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .modal-termos-footer {
+            padding: 16px 22px 22px;
+            border-top: 1px solid var(--cinza-borda);
+            flex-shrink: 0;
+            background-color: #FFFFFF;
+        }
+
+        .checkbox-termos {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-termos input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            min-height: 20px;
+            accent-color: var(--royal);
+            cursor: pointer;
+            margin-top: 1px;
+        }
+
+        .checkbox-termos span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--marinho);
+            line-height: 1.4;
+        }
+
+        .btn-aceitar-termos {
+            width: 100%;
+            min-height: 50px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background-color: var(--royal);
+            color: #FFFFFF;
+            transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+            touch-action: manipulation;
+        }
+
+        .btn-aceitar-termos:hover:not(:disabled) {
+            filter: brightness(1.08);
+        }
+
+        .btn-aceitar-termos:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-aceitar-termos:disabled {
+            background-color: var(--cinza-borda);
+            color: #999;
+            cursor: not-allowed;
+            opacity: 1;
+            transform: none;
+            filter: none;
+        }
+
+        .conteudo-bloqueado {
+            opacity: 0.3;
+            pointer-events: none;
+            user-select: none;
+            filter: grayscale(0.4);
+        }
+
+        /* =====================================================
            TABLETS / DESKTOP
         ===================================================== */
 
@@ -647,11 +862,112 @@
                 flex-direction: row;
                 font-size: 14px;
             }
+
+            .modal-termos-header h2 {
+                font-size: 19px;
+            }
+
+            .termo-secao-titulo {
+                font-size: 14px;
+            }
+
+            .termo-secao p,
+            .termo-secao li {
+                font-size: 14px;
+            }
+
+            .termo-declaracao p {
+                font-size: 13.5px;
+            }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- =====================================================
+         MODAL DE TERMOS
+    ===================================================== -->
+
+    <div class="modal-termos-overlay ativo" id="modalTermos">
+        <div class="modal-termos-box">
+            <div class="modal-termos-header">
+                <h2>Termo de Compromisso, Responsabilidade e Privacidade</h2>
+                <div class="acento"></div>
+            </div>
+            <div class="modal-termos-body">
+                <p style="font-size: 13px; line-height: 1.6; color: var(--marinho); opacity: 0.75; margin-bottom: 18px;">
+                    Bem-vindo(a) ao aplicativo de controle de acesso de veículos ao canteiro de obras. Este estacionamento é uma mera cortesia concedida exclusivamente aos profissionais com contrato ativo no projeto. O uso da área e do aplicativo está rigorosamente condicionado à aceitação deste termo.
+                </p>
+
+                <div class="termo-secao">
+                    <div class="termo-secao-titulo">
+                        <span class="numero-secao">1</span>
+                        Natureza da Concessão e Vínculo
+                    </div>
+                    <ul>
+                        <li><strong>Mera Tolerância:</strong> A permissão de uso do estacionamento é provisória, gratuita e constitui mera tolerância do Proprietário devido à indisponibilidade de área externa, não configurando direito adquirido.</li>
+                        <li><strong>Vínculo ao Projeto:</strong> O acesso é exclusivo para seu veículo de uso pessoal e será imediatamente revogado em caso de término do seu contrato de serviço ou desligamento do projeto.</li>
+                        <li><strong>Veracidade:</strong> Todas as informações e fotos de vistoria inseridas no aplicativo são de sua inteira responsabilidade e devem refletir o estado real do veículo.</li>
+                    </ul>
+                </div>
+
+                <div class="termo-secao">
+                    <div class="termo-secao-titulo">
+                        <span class="numero-secao">2</span>
+                        Riscos Inerentes à Obra e Isenção de Responsabilidade
+                    </div>
+                    <ul>
+                        <li><strong>Riscos do Canteiro:</strong> O Proprietário não se responsabiliza por danos estéticos ou materiais decorrentes da dinâmica da obra, como poeira, respingos de cimento/tinta ou movimentação de maquinário pesado.</li>
+                        <li><strong>Guarda de Bens:</strong> O Proprietário não assume a guarda do veículo (não é fiel depositário), ficando isento de responsabilidade por furtos, roubos, colisões, incêndios ou vandalismo.</li>
+                        <li><strong>Objetos no Interior do Veículo:</strong> É terminantemente proibido deixar equipamentos, eletrônicos ou valores dentro do veículo. O Proprietário não responderá por itens deixados no automóvel.</li>
+                    </ul>
+                </div>
+
+                <div class="termo-secao">
+                    <div class="termo-secao-titulo">
+                        <span class="numero-secao">3</span>
+                        Privacidade e Proteção de Dados (LGPD)
+                    </div>
+                    <ul>
+                        <li><strong>Finalidade e Base Legal:</strong> O registro fotográfico e a coleta de dados (nome, CPF, CNH e placa) visam exclusivamente o controle de acesso e a segurança do canteiro, amparados pelo legítimo interesse do Proprietário.</li>
+                        <li><strong>Armazenamento e Direitos:</strong> Os dados serão mantidos em ambiente seguro, sendo descartados após o término do seu vínculo com o projeto ou findo o prazo legal para auditorias. Você poderá solicitar a consulta ou atualização de seus dados pelos canais de gestão da obra.</li>
+                    </ul>
+                </div>
+
+                <div class="termo-secao">
+                    <div class="termo-secao-titulo">
+                        <span class="numero-secao">4</span>
+                        Regras de Conduta e Uso Obrigatório de EPI
+                    </div>
+                    <ul>
+                        <li><strong>Vestimenta e EPI:</strong> Ao desembarcar do veículo e para acessar o canteiro de obras, é estritamente obrigatório o uso de calça comprida, calçado de segurança e colete refletivo. O acesso e a circulação sem estes equipamentos são expressamente proibidos.</li>
+                        <li><strong>Velocidade e Atenção:</strong> Transitar em velocidade reduzida, respeitando a sinalização interna e dando preferência absoluta a pedestres e máquinas pesadas.</li>
+                        <li><strong>Local de Parada:</strong> Estacionar apenas nas áreas demarcadas para veículos de passeio, sem obstruir vias de emergência ou rotas de manobra.</li>
+                    </ul>
+                </div>
+
+                <div class="termo-secao">
+                    <div class="termo-secao-titulo">
+                        <span class="numero-secao" style="background-color: var(--salmao);">!</span>
+                        Declaração de Aceite
+                    </div>
+                    <div class="termo-declaracao">
+                        <p>"Declaro que li e compreendi os termos acima. Reconheço que o estacionamento é uma cortesia em área de risco, isento o Proprietário de qualquer responsabilidade sobre o veículo e bens, concordo com o uso obrigatório de EPIs ao desembarcar, e autorizo o tratamento dos meus dados para controle de acesso, conforme a LGPD."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-termos-footer">
+                <label class="checkbox-termos">
+                    <input type="checkbox" id="checkAceiteTermos" onchange="toggleBotaoAceite()">
+                    <span>Li e aceito os termos de uso</span>
+                </label>
+                <button type="button" class="btn-aceitar-termos" id="btnAceitarTermos" disabled onclick="aceitarTermos()">
+                    Iniciar Cadastro
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- =====================================================
          HEADER
@@ -674,7 +990,7 @@
          CONTEÚDO PRINCIPAL
     ===================================================== -->
 
-    <main>
+    <main id="conteudoPrincipal">
 
         <a class="voltar-menu" href="home.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -1279,6 +1595,7 @@
 
 
         let usuarioSessao = null;
+        let termosAceitos = false;
 
 
         /* =====================================================
@@ -1610,6 +1927,41 @@
 
 
         /* =====================================================
+           MODAL DE TERMOS
+        ===================================================== */
+
+        function toggleBotaoAceite() {
+            const checkbox = document.getElementById("checkAceiteTermos");
+            const botao = document.getElementById("btnAceitarTermos");
+            botao.disabled = !checkbox.checked;
+        }
+
+        function aceitarTermos() {
+            const checkbox = document.getElementById("checkAceiteTermos");
+            if (!checkbox.checked) return;
+
+            termosAceitos = true;
+
+            document.getElementById("modalTermos").classList.remove("ativo");
+            document.getElementById("conteudoPrincipal").classList.remove("conteudo-bloqueado");
+
+            // Salva no sessionStorage para não pedir novamente na mesma sessão
+            sessionStorage.setItem("termosAceitos", "true");
+        }
+
+        function verificarTermosAceitos() {
+            const jaAceitou = sessionStorage.getItem("termosAceitos");
+            if (jaAceitou === "true") {
+                termosAceitos = true;
+                document.getElementById("modalTermos").classList.remove("ativo");
+                document.getElementById("conteudoPrincipal").classList.remove("conteudo-bloqueado");
+            } else {
+                document.getElementById("conteudoPrincipal").classList.add("conteudo-bloqueado");
+            }
+        }
+
+
+        /* =====================================================
            ENVIO DO FORMULÁRIO
         ===================================================== */
 
@@ -1778,6 +2130,15 @@
                 }
 
             });
+
+
+        /* =====================================================
+           INICIALIZAÇÃO
+        ===================================================== */
+
+        window.addEventListener("DOMContentLoaded", function() {
+            verificarTermosAceitos();
+        });
 
     </script>
 
